@@ -1,6 +1,7 @@
 # curious_agent
 Ido - Alpha student
+Project: curious agent.
 
 This respiratory uses python 2.7+ and openAI GYM
 
-to insall openAI GYM: pip install gym
+To insall openAI GYM: pip install gym
