@@ -126,17 +126,16 @@ def main():
     plt.legend()
 
 
-    fig, ax = plt.subplots()
-    ax.set_title("Values")
-    sns.heatmap(values, cmap=plt.cm.Blues, ax=ax,  annot=True, linewidths=.5)
-    vmax, vmin = np.max(values), np.min(values)
+    fig, ax = plt.subplots(1,2)
+    ax[0].set_title("Values")
+    sns.heatmap(values, cmap=plt.cm.Blues, ax=ax[0], linewidths=.5)
+    vmax, vmin = np.max(values), np.min(values_before)
+    ax[1].set_title("Values Before Episode")
+    sns.heatmap(values_before, vmax=vmax, vmin=vmin, cmap=plt.cm.Blues, ax=ax[1], linewidths=.5)
 
     # print values_before
     # norm_values_before = values_before - np.amin(values_before)
     # print norm_values_before
-    fig, ax = plt.subplots(1,1)
-    ax.set_title("Values Before Episode")
-    sns.heatmap(values_before, vmax=vmax, vmin=vmin, cmap=plt.cm.Blues, ax=ax,  annot=True, linewidths=.5)
 
     # fig, ax = plt.subplots()
     # # lc is for barplot, how long the agent spent next to a wall, corner or neither.
