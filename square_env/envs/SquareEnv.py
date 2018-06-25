@@ -3,9 +3,8 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-
-RECT_WIDTH = 10
-RECT_HEIGHT = 20
+RECT_WIDTH = 20
+RECT_HEIGHT = 10
 
 AGENT_DRAWING_SIZE = 10
 DRAWING_RECT_BEGIN = 100
@@ -19,6 +18,9 @@ AGENTS_COUNT = 1
 
 INIT_LOCATIONS = ([5,5],)
 INIT_DIRECTIONS = ([1,0],)
+
+def set(s):
+    globals()[s['name']] = s['val']
 
 class SquareEnv(gym.Env):
     metadata = {'render.modes': ['human']}

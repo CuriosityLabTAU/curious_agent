@@ -23,22 +23,22 @@ def lognonlin(x,deriv=False):
     return np.log(np.abs(x)+1)*np.sign(x)
 
 class CuriousAgent():
-    def __init__(self,index):
+    def __init__(self,index, gamma, learner_alpha, q_alpha, epsilon):
         self.q_function = neural_network((sqv.OBSERVATION_SIZE,12,3),(relu,)*2)
         # input -> state
         # output -> value(state)
 
-        self.learner = neural_network((sqv.OBSERVATION_SIZE+3,60,60,60,sqv.OBSERVATION_SIZE),(relu,)*4)
+        self.learner = neural_network((sqv.OBSERVATION_SIZE+3,6,sqv.OBSERVATION_SIZE),(relu,)*2)
         # input -> [state,action]
         # output -> next state
 
         self.memory = []
         # memory (begins empty)
 
-        self.gamma = 0.9
-        self.learner_alpha = 0.00005
-        self.q_alpha = 0.00001
-        self.epsilon = 0.1
+        self.gamma = gamma
+        self.learner_alpha = learner_alpha
+        self.q_alpha = q_alpha
+        self.epsilon = epsilon
         # hyper parameters
 
         self.index = index
