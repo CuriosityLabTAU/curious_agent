@@ -5,7 +5,7 @@ from gym.utils import seeding
 
 
 RECT_WIDTH = 10
-RECT_HEIGHT = 20
+RECT_HEIGHT = 10
 
 AGENT_DRAWING_SIZE = 10
 DRAWING_RECT_BEGIN = 100
@@ -15,15 +15,11 @@ OBSERVATION_SIZE = 3
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 500
 
-INIT_LOCATIONS = []
-INIT_DIRECTIONS = []
+INIT_LOCATIONS = ([5, 5],)
+INIT_DIRECTIONS = ([1, 0],)
 
 
-AGENTS_COUNT = 40
-for i in xrange(20):
-    for j in xrange(10):
-        INIT_LOCATIONS += [[j,i]]
-        INIT_DIRECTIONS += [[1,0]]
+AGENTS_COUNT = 1
 
 def set_global(name, val):
     globals()[name] = val

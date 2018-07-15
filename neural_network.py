@@ -12,8 +12,8 @@ class NeuralNetwork:
         self.nonlin_funcs = functions
         layers = list(layers_num)
         for i in range(len(layers)-1):
-            self.layers.append(np.random.rand(layers[i], layers[i+1])-0.5)
-            self.biases.append(np.random.rand(layers[i+1])-0.5)
+            self.layers.append(np.random.rand(layers[i], layers[i+1])-0.4)
+            self.biases.append(np.random.rand(layers[i+1])-0.4)
 
     def hypot(self, input):
         for i in range(len(self.layers)):

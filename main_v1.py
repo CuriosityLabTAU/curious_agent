@@ -27,7 +27,10 @@ def info_to_location(info):
     return loc
 
 
-MAX_STEPS = 5000
+MAX_STEPS = 50
+
+
+NUMBER_OF_AGENTS = 1
 
 
 def main():
@@ -35,24 +38,24 @@ def main():
     env = gym.make('square-v0')
     states = env.reset()
     agents = []
-    for i in xrange(40):
+    for i in xrange(NUMBER_OF_AGENTS):
         agents.append(CuriousAgent(i))
 
-    agent_errors = [0]*40
+    agent_errors = [0]*NUMBER_OF_AGENTS
     tds = []
     errors = []
     timesteps = []
     rewards = []
     costs = []
     infos = []
-    values_before = np.zeros((sqv.RECT_WIDTH + 1, sqv.RECT_HEIGHT + 1))
+    values_before = [np.zeros((sqv.RECT_WIDTH + 1, sqv.RECT_HEIGHT + 1)) for _ in xrange(4)]
 
     for x in range(sqv.RECT_WIDTH+1):
         for y in range(sqv.RECT_HEIGHT+1):
             env.agents[0]["loc"] = np.array([x, y])
             for i in range(4):
                 ob, _, _, _ = env.step(np.array([0]), 0)
-                values_before[x, y] += np.amax(agents[0].q_function.hypot(ob))
+                values_before[i][x, y] += np.amax(agents[0].q_function.hypot(ob))
 
     env.agents[0]["loc"] = np.array([5, 5])
 
@@ -89,14 +92,14 @@ def main():
     print scales
     scales = np.array(scales)
 
-    values = np.zeros((sqv.RECT_WIDTH+1, sqv.RECT_HEIGHT+1))
+    values = [np.zeros((sqv.RECT_WIDTH+1, sqv.RECT_HEIGHT+1)) for _ in xrange(4)]
 
     for x in range(sqv.RECT_WIDTH+1):
         for y in range(sqv.RECT_HEIGHT+1):
             env.agents[0]["loc"] = np.array([x,y])
             for i in range(4):
                 ob,_,_,_ = env.step(np.array([0]),0)
-                values[x][y] += np.amax(agent.q_function.hypot(ob))
+                values[i][x, y] += np.amax(agent.q_function.hypot(ob))
 
     print values
     norm_values = values - np.amin(values)
@@ -123,26 +126,26 @@ def main():
 
     style.use("classic")
 
-    fig, ax = plt.subplots()
-    ax.set_title("Values")
-    ax.matshow(values,cmap=plt.cm.Blues)
+    for ind, k in enumerate(values):
+        fig, ax = plt.subplots()
+        ax.set_title("Values ("+str(ind)+")")
+        ax.matshow(k,cmap=plt.cm.Blues)
 
-    for i in xrange(sqv.RECT_WIDTH+1):
-        for j in xrange(sqv.RECT_HEIGHT+1):
-            c = values[i][j]
-            ax.text(j, i, str(c)[:5], va='center', ha='center',size=8)
+        for i in xrange(sqv.RECT_WIDTH+1):
+            for j in xrange(sqv.RECT_HEIGHT+1):
+                c = k[i, j]
+                ax.text(j, i, str(c)[:5], va='center', ha='center',size=8)
 
-    print values_before
-    norm_values_before = values_before - np.amin(values_before)
-    print norm_values_before
-    fig, ax = plt.subplots()
-    ax.matshow(values_before, cmap=plt.cm.Reds)
-    ax.set_title("Values Before Episode")
+    for ind, k in enumerate(values_before):
+        print k
+        fig, ax = plt.subplots()
+        ax.matshow(k, cmap=plt.cm.Reds)
+        ax.set_title("Values Before Episode ("+str(ind)+")")
 
-    for i in xrange(sqv.RECT_WIDTH+1):
-        for j in xrange(sqv.RECT_HEIGHT+1):
-            c = values_before[i, j]
-            ax.text(j, i, str(c)[:5], va='center', ha='center', size=8)
+        for i in xrange(sqv.RECT_WIDTH+1):
+            for j in xrange(sqv.RECT_HEIGHT+1):
+                c = k[i, j]
+                ax.text(j, i, str(c)[:5], va='center', ha='center', size=8)
 
     style.use("bmh")
 
