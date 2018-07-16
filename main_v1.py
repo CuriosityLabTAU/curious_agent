@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 import threading
 import random
-from draw_plots import draw_plots
+from draw_plots import draw_plots, plot_together
 from activate_agent import activate_agent
 
 
@@ -49,13 +49,13 @@ def main():
     d_reset = {}
     d_nontrained = {}
 
-    for i in xrange(50):
-        d = activate_agent(100, 20, render=False, print_info=False)
+    for i in xrange(500):
+        d = activate_agent(50, 25, render=False, print_info=False)
         reset_trained_agent = d['agents']
         reset_trained_agent[0].reset_network()
 
 
-        d = activate_agent(100, 20, reset_agent=False, render=False, print_info=False)
+        d = activate_agent(50*25, reset_agent=False, render=False, print_info=False)
         nonreset_trained_agent = d['agents']
         nonreset_trained_agent[0].reset_network()
 
@@ -63,7 +63,7 @@ def main():
         sqv.set_global('RECT_WIDTH', random.randint(10, 20))
         sqv.set_global('RECT_HEIGHT', random.randint(10, 20))
 
-        d = activate_agent(500, agents=reset_trained_agent, render=False, print_info=False)
+        d = activate_agent(100, agents=reset_trained_agent, render=False, print_info=False)
         d = get_agent_dict(d, 0)
         if i == 0:
             for j in d:
@@ -73,7 +73,7 @@ def main():
                 if isinstance(d_reset[j], np.ndarray) and d_reset[j].dtype == 'float':
                     d_reset[j] = (float(i) * d_reset[j] + np.array(d[j]))/float(i+1)
 
-        d = activate_agent(500, agents=nonreset_trained_agent, render=False, print_info=False)
+        d = activate_agent(100, agents=nonreset_trained_agent, render=False, print_info=False)
         d = get_agent_dict(d, 0)
         if i == 0:
             for j in d:
@@ -83,7 +83,7 @@ def main():
                 if isinstance(d_nonreset[j], np.ndarray) and d_nonreset[j].dtype == 'float':
                     d_nonreset[j] = (float(i)*d_nonreset[j] + np.array(d[j]))/float(i+1)
 
-        d = activate_agent(500, render=False, print_info=False)
+        d = activate_agent(100, render=False, print_info=False)
         d = get_agent_dict(d, 0)
         if i == 0:
             for j in d:
@@ -95,11 +95,17 @@ def main():
 
         print "finished running #%i"%i
 
-    draw_plots(d_reset, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
+    #draw_plots(d_reset, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
 
-    draw_plots(d_nonreset, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
+    #draw_plots(d_nonreset, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
 
-    draw_plots(d_nontrained, use_alpha=False, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
+    #draw_plots(d_nontrained, use_alpha=False, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
+
+    plot_together(d_nontrained['timesteps'], [d_nontrained['errors'], 'non trained'],
+                  [d_nonreset['errors'], 'non reset'], [d_reset['errors'], 'reset'], title='Errors')
+
+    plot_together(d_nontrained['timesteps'], [d_nontrained['tds'], 'non trained'],
+                  [d_nonreset['tds'], 'non reset'], [d_reset['tds'], 'reset'], title='Errors')
 
     from IPython import embed
     embed()
