@@ -29,7 +29,6 @@ def info_to_location(info):
 
 def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars=True, plot_values=True,
                plot_values_before=True, plot_locs_on_tds=True, plot_locs_on_errors=True):
-    agents = values_dict['agents']
     tds = values_dict['tds']
     errors = values_dict['errors']
     timesteps = values_dict['timesteps']
@@ -101,7 +100,6 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
     if plot_values_before:
         for ind, k in enumerate(values_before):
-            print k
             fig, ax = plt.subplots()
             ax.matshow(k, cmap=plt.cm.Reds)
             ax.set_title("Values Before Episode ("+str(ind)+")")

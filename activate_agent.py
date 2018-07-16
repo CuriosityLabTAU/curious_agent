@@ -38,8 +38,8 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                 for i in range(4):
                     ob, _, _, _ = env.step(np.array([0]), 0)
                     values_before[t][i][x, y] += np.amax(agents[t].q_function.hypot(ob))
-        env.agents[t]['loc'] = sqv.INIT_LOCATIONS[t]
-        env.agents[t]['dir'] = sqv.INIT_DIRECTIONS[t]
+        env.agents[t]['loc'] = np.array(sqv.INIT_LOCATIONS[t])
+        env.agents[t]['dir'] = np.array(sqv.INIT_DIRECTIONS[t])
 
     for timestep in xrange(number_of_epoches * epoch_time):
         for i, agent in enumerate(agents):
@@ -85,6 +85,8 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                     ob, _, _, _ = env.step(np.array([0]), 0)
                     values[t][i][x, y] += np.amax(agents[t].q_function.hypot(ob))
 
+
+    env.close()
 
     ret = {}
     ret['agents'] = agents

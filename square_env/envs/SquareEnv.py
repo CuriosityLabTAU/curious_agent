@@ -203,7 +203,7 @@ class SquareEnv(gym.Env):
                    self._get_info()
 
         action = action[0] - 1
-        self._take_action(action,self.agents[index])
+        self._take_action(action, self.agents[index])
         return self._get_observation(self.agents[index]["loc"],self.agents[index]["dir"]),\
             0,\
             False,\
@@ -282,3 +282,6 @@ class SquareEnv(gym.Env):
         for i in range(len(self.directions_render)):
             self.directions_render[i].set_translation(*((self.agents[i]["loc"]+self.agents[i]["dir"])*AGENT_DRAWING_SIZE+DRAWING_RECT_BEGIN))
         return self.viewer.render()
+
+    def close(self):
+        self.viewer.close()
