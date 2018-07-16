@@ -49,13 +49,13 @@ def main():
     d_reset = []
     d_nontrained = []
 
-    for i in xrange(500):
-        d = activate_agent(100, 20, render=False)
+    for i in xrange(50):
+        d = activate_agent(100, 20, render=False, print_info=False)
         reset_trained_agent = d['agents']
         reset_trained_agent[0].reset_network()
 
 
-        d = activate_agent(100, 20, reset_agent=False, render=False)
+        d = activate_agent(100, 20, reset_agent=False, render=False, print_info=False)
         nonreset_trained_agent = d['agents']
         nonreset_trained_agent[0].reset_network()
 
@@ -63,15 +63,15 @@ def main():
         sqv.set_global('RECT_WIDTH', random.randint(10, 20))
         sqv.set_global('RECT_HEIGHT', random.randint(10, 20))
 
-        d = activate_agent(500, agents=reset_trained_agent, render=False)
+        d = activate_agent(500, agents=reset_trained_agent, render=False, print_info=False)
         d = get_agent_dict(d, 0)
         d_reset.append(d)
 
-        d = activate_agent(500, agents=nonreset_trained_agent, render=False)
+        d = activate_agent(500, agents=nonreset_trained_agent, render=False, print_info=False)
         d = get_agent_dict(d, 0)
         d_nonreset.append(d)
 
-        d = activate_agent(500, render=False)
+        d = activate_agent(500, render=False, print_info=False)
         d = get_agent_dict(d, 0)
         d_nontrained.append(d)
 

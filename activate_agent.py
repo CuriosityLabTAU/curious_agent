@@ -11,7 +11,8 @@ PRINT_STATE_PRED = 50
 PRINT_TIME_STEP = 500
 
 
-def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_agent=True, agents=None, render=True):
+def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_agent=True, agents=None,
+                   render=True, print_info=True):
     env = gym.make('square-v0')
     states = env.reset(render=render)
     if agents is None:
@@ -57,11 +58,12 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
             timesteps[i].append(timestep)
             epoch_td[i].append(td)
             epoch_error[i].append(error)
-            if timestep % PRINT_STATE_PRED == 0:
-                print "state: " + str(state)
-                print "prediction: " + str(np.round(prediction))
-            if timestep % PRINT_TIME_STEP == 0:
-                print "time step: " + str(timestep)
+            if print_info:
+                if timestep % PRINT_STATE_PRED == 0:
+                    print "state: " + str(state)
+                    print "prediction: " + str(np.round(prediction))
+                if timestep % PRINT_TIME_STEP == 0:
+                    print "time step: " + str(timestep)
             if timestep % epoch_time == 0 and timestep != 0 and reset_agent:
                 epoches_errors[i].append(epoch_error[i])
                 epoch_error[i] = []
