@@ -2,7 +2,7 @@ import numpy as np
 
 
 class NeuralNetwork:
-    def __init__(self, layers_num, functions):
+    def __init__(self, layers_num, functions, min=-0.5, max=0.5):
         self.layers = []
         self.biases = []
         if hasattr(functions, '__iter__') or hasattr(functions, '__getitem__'):
@@ -12,8 +12,8 @@ class NeuralNetwork:
         self.nonlin_funcs = functions
         layers = list(layers_num)
         for i in range(len(layers)-1):
-            self.layers.append(np.random.rand(layers[i], layers[i+1])-0.4)
-            self.biases.append(np.random.rand(layers[i+1])-0.4)
+            self.layers.append((max - min) * np.random.rand(layers[i], layers[i + 1]) + min)
+            self.biases.append((max - min) * np.random.rand(layers[i + 1]) + min)
 
     def hypot(self, input):
         for i in range(len(self.layers)):

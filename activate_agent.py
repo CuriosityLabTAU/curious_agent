@@ -11,11 +11,13 @@ PRINT_STATE_PRED = 50
 PRINT_TIME_STEP = 500
 
 
-def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_agent=True):
+def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_agent=True, agents=None, render=True):
     env = gym.make('square-v0')
-    states = env.reset()
-    agents = []
-    for i in xrange(number_of_agents):
+    states = env.reset(render=render)
+    if agents is None:
+        agents = []
+    number_of_agents = max(number_of_agents, len(agents))
+    for i in xrange(len(agents), number_of_agents):
         agents.append(CuriousAgent(i))
 
     agent_errors = [0] * number_of_agents
@@ -61,16 +63,17 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
             if timestep % PRINT_TIME_STEP == 0:
                 print "time step: " + str(timestep)
             if timestep % epoch_time == 0 and timestep != 0 and reset_agent:
-                epoches_errors[i].append(epoch_error)
+                epoches_errors[i].append(epoch_error[i])
                 epoch_error[i] = []
-                epoches_tds[i].append(epoch_td)
+                epoches_tds[i].append(epoch_td[i])
                 epoch_td[i] = []
                 agent.reset_network()
                 env.agents[i]["loc"] = env.square_space.sample()
                 states[i] = env._get_all_observations()[i]
         # learner_c = agent.train(300)
         # costs.append(np.sqrt(learner_c))
-        env.render()
+        if render:
+            env.render()
     for i in xrange(number_of_agents):
         epoches_errors[i].append(epoch_error[i])
         epoches_tds[i].append(epoch_td[i])
@@ -85,8 +88,8 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                     ob, _, _, _ = env.step(np.array([0]), 0)
                     values[t][i][x, y] += np.amax(agents[t].q_function.hypot(ob))
 
-
-    env.close()
+    if render:
+        env.close()
 
     ret = {}
     ret['agents'] = agents

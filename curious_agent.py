@@ -21,10 +21,10 @@ MIN_EPSILON = 0.0005
 ALL_ACTIONS = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 # an array of all the possible actions to take
 
-AGENT_GAMMA = 0.9
+AGENT_GAMMA = 0.5
 # the init gamma variable of the agent
 
-AGENT_LEARNER_ALPHA = 0.02
+AGENT_LEARNER_ALPHA = 0.01
 # the learning rate of the agent's learner
 
 AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 16, sqv.OBSERVATION_SIZE)
@@ -36,7 +36,7 @@ AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv
 AGENT_INIT_COUNTER = 5
 # amount of steps to take before performing gradient decent on recurrent network
 
-AGENT_Q_ALPHA = 0.0005
+AGENT_Q_ALPHA = 0.0001
 # the learning rate of the agent's q function
 
 AGENT_INIT_EPSILON = 0.1
@@ -44,9 +44,19 @@ AGENT_INIT_EPSILON = 0.1
 
 AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 16, 32, 3)
 
+
+def linear_relu(x):
+    return 0.0 if x <= 0.0 else x
+
+
+linear_relu = np.vectorize(linear_relu)
+
+
 def relu(x, derivative=False):
     if derivative:
         e = np.exp(x)
+        if not np.isfinite(e).all():
+            return linear_relu(x)
         return (e-1)/e  # derivative (logistic function) using the output of relu
     return np.log(np.exp(x)+1)
 
@@ -68,7 +78,7 @@ def sigmoid(x, derivative=False):
 
 class CuriousAgent:
     def __init__(self, index):
-        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, relu)
+        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, relu, min=-0.1, max=0.1)
         # input -> state
         # output -> value(state)
 
@@ -152,9 +162,11 @@ class CuriousAgent:
 
         max_ind = np.argmax(q_label)
 
-        for i in q_label:
-            if np.isnan(i):
-                raise Exception("nan occurred")
+        if np.isnan(q_label).any():
+            for i in self.q_function.layers:
+                if not np.isfinite(i).all():
+                    raise Exception('nan occurred in q function')
+            raise Exception('nan occurred in learner')
 
         # step 2 achieved
 
@@ -237,7 +249,7 @@ class CuriousAgent:
 
         for i in batch:
             input.append(i[0])
-            output.append(i[2]+self.gamma*self.value_function.hypot(i[3]))
+            output.append(i[2]+self.gamma*self.q_function.hypot(i[3]))
 
         return np.array(input), np.array(output)
 

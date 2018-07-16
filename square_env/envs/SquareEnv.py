@@ -15,8 +15,8 @@ OBSERVATION_SIZE = 3
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 500
 
-INIT_LOCATIONS = ([5, 5],)
-INIT_DIRECTIONS = ([1, 0],)
+INIT_LOCATIONS = [[5, 5]]
+INIT_DIRECTIONS = [[1, 0]]
 
 
 AGENTS_COUNT = 1
@@ -215,64 +215,65 @@ class SquareEnv(gym.Env):
             l.append(self._get_observation(i["loc"],i["dir"]))
         return l
 
-    def reset(self):
+    def reset(self, render=True):
 
         self.agents = []
         for i in range(AGENTS_COUNT):
             self.agents.append({"loc": np.array(INIT_LOCATIONS[i]), "dir": np.array(INIT_DIRECTIONS[i])})
 
-        from gym.envs.classic_control import rendering
-        self.viewer = rendering.Viewer(WINDOW_WIDTH, WINDOW_HEIGHT)
+        if render:
+            from gym.envs.classic_control import rendering
+            self.viewer = rendering.Viewer(WINDOW_WIDTH, WINDOW_HEIGHT)
 
-        self.agents_render = []
+            self.agents_render = []
 
-        l, r, t, b = -AGENT_DRAWING_SIZE/2, AGENT_DRAWING_SIZE/2, AGENT_DRAWING_SIZE/2, -AGENT_DRAWING_SIZE/2
+            l, r, t, b = -AGENT_DRAWING_SIZE/2, AGENT_DRAWING_SIZE/2, AGENT_DRAWING_SIZE/2, -AGENT_DRAWING_SIZE/2
 
-        for i in range(AGENTS_COUNT):
-            agent = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
-            self.agents_render.append(rendering.Transform())
-            agent.add_attr(self.agents_render[i])
-            agent.set_color(0, .5, 0)
-            self.viewer.add_geom(agent)
+            for i in range(AGENTS_COUNT):
+                agent = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+                self.agents_render.append(rendering.Transform())
+                agent.add_attr(self.agents_render[i])
+                agent.set_color(0, .5, 0)
+                self.viewer.add_geom(agent)
 
-        self.directions_render = []
+            self.directions_render = []
 
-        l, r, t, b = -AGENT_DRAWING_SIZE/5, AGENT_DRAWING_SIZE/5, AGENT_DRAWING_SIZE/5, -AGENT_DRAWING_SIZE/5
+            l, r, t, b = -AGENT_DRAWING_SIZE/5, AGENT_DRAWING_SIZE/5, AGENT_DRAWING_SIZE/5, -AGENT_DRAWING_SIZE/5
 
-        for i in range(AGENTS_COUNT):
-            direction = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
-            direction.set_color(.5, 0, 0)
-            self.directions_render.append(rendering.Transform())
-            direction.add_attr(self.directions_render[i])
-            self.viewer.add_geom(direction)
+            for i in range(AGENTS_COUNT):
+                direction = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+                direction.set_color(.5, 0, 0)
+                self.directions_render.append(rendering.Transform())
+                direction.add_attr(self.directions_render[i])
+                self.viewer.add_geom(direction)
 
-        l, r, t, b = 0, RECT_WIDTH*AGENT_DRAWING_SIZE, 0, 2
+            l, r, t, b = 0, RECT_WIDTH*AGENT_DRAWING_SIZE, 0, 2
 
-        env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
-        border_render = rendering.Transform()
-        env_border.add_attr(border_render)
-        border_render.set_translation(DRAWING_RECT_BEGIN,DRAWING_RECT_BEGIN) # bottom
-        self.viewer.add_geom(env_border)
+            env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            border_render = rendering.Transform()
+            env_border.add_attr(border_render)
+            border_render.set_translation(DRAWING_RECT_BEGIN,DRAWING_RECT_BEGIN) # bottom
+            self.viewer.add_geom(env_border)
 
-        env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
-        border_render = rendering.Transform()
-        env_border.add_attr(border_render)
-        border_render.set_translation(DRAWING_RECT_BEGIN, DRAWING_RECT_BEGIN+RECT_HEIGHT*AGENT_DRAWING_SIZE) #top
-        self.viewer.add_geom(env_border)
+            env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            border_render = rendering.Transform()
+            env_border.add_attr(border_render)
+            border_render.set_translation(DRAWING_RECT_BEGIN, DRAWING_RECT_BEGIN+RECT_HEIGHT*AGENT_DRAWING_SIZE) #top
+            self.viewer.add_geom(env_border)
 
-        l, r, t, b = 0, 2, RECT_HEIGHT*AGENT_DRAWING_SIZE, 0
+            l, r, t, b = 0, 2, RECT_HEIGHT*AGENT_DRAWING_SIZE, 0
 
-        env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
-        border_render = rendering.Transform()
-        env_border.add_attr(border_render)
-        border_render.set_translation(DRAWING_RECT_BEGIN, DRAWING_RECT_BEGIN)  # left
-        self.viewer.add_geom(env_border)
+            env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            border_render = rendering.Transform()
+            env_border.add_attr(border_render)
+            border_render.set_translation(DRAWING_RECT_BEGIN, DRAWING_RECT_BEGIN)  # left
+            self.viewer.add_geom(env_border)
 
-        env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
-        border_render = rendering.Transform()
-        env_border.add_attr(border_render)
-        border_render.set_translation(DRAWING_RECT_BEGIN+AGENT_DRAWING_SIZE*RECT_WIDTH, DRAWING_RECT_BEGIN)  # left
-        self.viewer.add_geom(env_border)
+            env_border = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            border_render = rendering.Transform()
+            env_border.add_attr(border_render)
+            border_render.set_translation(DRAWING_RECT_BEGIN+AGENT_DRAWING_SIZE*RECT_WIDTH, DRAWING_RECT_BEGIN)  # left
+            self.viewer.add_geom(env_border)
 
         return self._get_all_observations()
 

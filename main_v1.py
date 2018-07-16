@@ -7,6 +7,7 @@ import square_env.envs as sqv
 import matplotlib.pyplot as plt
 from matplotlib import style
 import threading
+import random
 from draw_plots import draw_plots
 from activate_agent import activate_agent
 
@@ -29,13 +30,59 @@ def get_agent_dict(all_agents_dict, index):
     return d
 
 
+def join_dict_list(lst):
+    d = {}
+    for i in lst[0]:
+        d[i] = np.array(lst[0][i]) if isinstance(i, list) else lst[0][i]
+    for i in xrange(1, len(lst)):
+        for j in lst[i]:
+            if isinstance(d[j], np.ndarray):
+                d[j] += np.array(lst[i][j])
+    for i in d:
+        if isinstance(d[i],np.ndarray):
+            d[i] /= float(len(lst))
+    return d
+
 def main():
 
-    d = activate_agent(100,20)
-    d = get_agent_dict(d, 0)
-    draw_plots(d)
+    d_nonreset = []
+    d_reset = []
+    d_nontrained = []
+
+    for i in xrange(500):
+        d = activate_agent(100, 20, render=False)
+        reset_trained_agent = d['agents']
+        reset_trained_agent[0].reset_network()
 
 
+        d = activate_agent(100, 20, reset_agent=False, render=False)
+        nonreset_trained_agent = d['agents']
+        nonreset_trained_agent[0].reset_network()
+
+
+        sqv.set_global('RECT_WIDTH', random.randint(10, 20))
+        sqv.set_global('RECT_HEIGHT', random.randint(10, 20))
+
+        d = activate_agent(500, agents=reset_trained_agent, render=False)
+        d = get_agent_dict(d, 0)
+        d_reset.append(d)
+
+        d = activate_agent(500, agents=nonreset_trained_agent, render=False)
+        d = get_agent_dict(d, 0)
+        d_nonreset.append(d)
+
+        d = activate_agent(500, render=False)
+        d = get_agent_dict(d, 0)
+        d_nontrained.append(d)
+
+    d = join_dict_list(d_reset)
+    draw_plots(d, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False)
+
+    d = join_dict_list(d_nonreset)
+    draw_plots(d, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False)
+
+    d = join_dict_list(d_nontrained)
+    draw_plots(d, use_alpha=False, plot_locs_on_errors=False, plot_locs_on_tds=False)
 
     from IPython import embed
     embed()

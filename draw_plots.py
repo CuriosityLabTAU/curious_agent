@@ -28,7 +28,7 @@ def info_to_location(info):
 
 
 def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars=True, plot_values=True,
-               plot_values_before=True, plot_locs_on_tds=True, plot_locs_on_errors=True):
+               plot_values_before=True, plot_locs_on_tds=True, plot_locs_on_errors=True, use_alpha=True):
     tds = values_dict['tds']
     errors = values_dict['errors']
     timesteps = values_dict['timesteps']
@@ -43,6 +43,8 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
     locs = info_to_location(infos)
     scales = loc_to_scalar(locs)
     scales = np.array(scales)
+
+    epoches_factor = max(255/len(epoches_tds), 1)
 
     style.use('ggplot')
 
@@ -62,8 +64,8 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
         fig, ax = plt.subplots(1, 1)
 
         for i, td in enumerate(epoches_tds):
-            ax.plot(np.arange(len(td)), td, label='epoch: ' + str(i), c=colormap(i),
-                    alpha=min(1.0 / (len(epoches_errors) - i) + 0.1, 1.0))
+            ax.plot(np.arange(len(td)), td, label='epoch: ' + str(i), c=colormap(i*epoches_factor),
+                    alpha=min(1.0 / (len(epoches_errors) - i) + 0.1, 1.0) if use_alpha else 1.0)
         ax.set_title("TDs")
         plt.legend()
 
@@ -79,7 +81,8 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
         fig, ax = plt.subplots(1, 1)
         for i, error in enumerate(epoches_errors):
-            ax.plot(np.arange(len(error)), error, label='epoch: '+str(i), c=colormap(i), alpha=min(1.0/(len(epoches_errors)-i)+0.1, 1.0))
+            ax.plot(np.arange(len(error)), error, label='epoch: '+str(i), c=colormap(i*epoches_factor),
+                    alpha=min(1.0/(len(epoches_errors)-i)+0.1, 1.0) if use_alpha else 1.0)
         ax.set_title("Errors")
         plt.legend()
 
