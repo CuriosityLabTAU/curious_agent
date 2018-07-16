@@ -41,13 +41,13 @@ class SquareEnv(gym.Env):
 
         self.square_space = spaces.Box(np.array([0, 0]), np.array([RECT_WIDTH, RECT_HEIGHT]), dtype="int32")
 
-        self.agents = None
+        self.agents = []
         # 2d vectors [x,y],[dx,dy] where dx,dy is the direction in which the agent is looking
 
         self.viewer = None
         self._seed = 1
-        self.agents_render = None
-        self.directions_render = None
+        self.agents_render = []
+        self.directions_render = []
 
     def _collides(self, agent):
         for i in self.agents:

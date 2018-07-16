@@ -28,7 +28,6 @@ NUMBER_OF_AGENTS = 1
 
 def main():
 
-
     d = activate_agent(100,20)
     draw_plots(d)
 
