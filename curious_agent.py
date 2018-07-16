@@ -21,10 +21,10 @@ MIN_EPSILON = 0.0005
 ALL_ACTIONS = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 # an array of all the possible actions to take
 
-AGENT_GAMMA = 0.5
+AGENT_GAMMA = 0.9
 # the init gamma variable of the agent
 
-AGENT_LEARNER_ALPHA = 0.01
+AGENT_LEARNER_ALPHA = 0.001
 # the learning rate of the agent's learner
 
 AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 16, sqv.OBSERVATION_SIZE)
@@ -78,7 +78,7 @@ def sigmoid(x, derivative=False):
 
 class CuriousAgent:
     def __init__(self, index):
-        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, relu, min=-0.1, max=0.1)
+        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, relu, min=-0.05, max=0.05)
         # input -> state
         # output -> value(state)
 

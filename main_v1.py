@@ -45,9 +45,9 @@ def join_dict_list(lst):
 
 def main():
 
-    d_nonreset = []
-    d_reset = []
-    d_nontrained = []
+    d_nonreset = {}
+    d_reset = {}
+    d_nontrained = {}
 
     for i in xrange(50):
         d = activate_agent(100, 20, render=False, print_info=False)
@@ -65,24 +65,41 @@ def main():
 
         d = activate_agent(500, agents=reset_trained_agent, render=False, print_info=False)
         d = get_agent_dict(d, 0)
-        d_reset.append(d)
+        if i == 0:
+            for j in d:
+                d_reset[j] = np.array(d[j]) if isinstance(d[j], list) else d[j]
+        else:
+            for j in d_reset:
+                if isinstance(d_reset[j], np.ndarray) and d_reset[j].dtype == 'float':
+                    d_reset[j] = (float(i) * d_reset[j] + np.array(d[j]))/float(i+1)
 
         d = activate_agent(500, agents=nonreset_trained_agent, render=False, print_info=False)
         d = get_agent_dict(d, 0)
-        d_nonreset.append(d)
+        if i == 0:
+            for j in d:
+                d_nonreset[j] = np.array(d[j]) if isinstance(d[j], list) else d[j]
+        else:
+            for j in d_nonreset:
+                if isinstance(d_nonreset[j], np.ndarray) and d_nonreset[j].dtype == 'float':
+                    d_nonreset[j] = (float(i)*d_nonreset[j] + np.array(d[j]))/float(i+1)
 
         d = activate_agent(500, render=False, print_info=False)
         d = get_agent_dict(d, 0)
-        d_nontrained.append(d)
+        if i == 0:
+            for j in d:
+                d_nontrained[j] = np.array(d[j]) if isinstance(d[j], list) else d[j]
+        else:
+            for j in d_nontrained:
+                if isinstance(d_nontrained[j], np.ndarray) and d_nontrained[j].dtype == 'float':
+                    d_nontrained[j] = (float(i)*d_nontrained[j] + np.array(d[j]))/float(i+1)
 
-    d = join_dict_list(d_reset)
-    draw_plots(d, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False)
+        print "finished running #%i"%i
 
-    d = join_dict_list(d_nonreset)
-    draw_plots(d, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False)
+    draw_plots(d_reset, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
 
-    d = join_dict_list(d_nontrained)
-    draw_plots(d, use_alpha=False, plot_locs_on_errors=False, plot_locs_on_tds=False)
+    draw_plots(d_nonreset, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
+
+    draw_plots(d_nontrained, use_alpha=False, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
 
     from IPython import embed
     embed()
