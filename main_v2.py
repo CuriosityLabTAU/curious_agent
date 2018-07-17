@@ -38,7 +38,7 @@ def join_dict_list(lst):
     d = {}
     for i in lst[0]:
         d[i] = np.array(lst[0][i]) if isinstance(i, list) else lst[0][i]
-    for i in xrange(1, len(lst)):
+    for i in range(1, len(lst)):
         for j in lst[i]:
             if isinstance(d[j], np.ndarray):
                 d[j] += np.array(lst[i][j])
@@ -52,7 +52,7 @@ def main():
     agent_dict = []
     random_dict = []
 
-    for i in xrange(50):
+    for i in range(500):
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.relu)
         curious_agent = CuriousAgent(0)
         activate_agent(100, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
@@ -68,7 +68,7 @@ def main():
 
         random_dict.append(get_agent_dict(d))
 
-        print "finished running #%i" % (i+1)
+        print("finished running #%i" % (i+1))
 
     a = []
     for i in agent_dict:

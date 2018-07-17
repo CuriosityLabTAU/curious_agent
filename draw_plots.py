@@ -96,8 +96,8 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
             ax.set_title("Values ("+str(ind)+")")
             ax.matshow(k,cmap=plt.cm.Blues)
 
-            for i in xrange(sqv.RECT_WIDTH+1):
-                for j in xrange(sqv.RECT_HEIGHT+1):
+            for i in range(sqv.RECT_WIDTH+1):
+                for j in range(sqv.RECT_HEIGHT+1):
                     c = k[i, j]
                     ax.text(j, i, str(c)[:5], va='center', ha='center',size=8)
 
@@ -107,8 +107,8 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
             ax.matshow(k, cmap=plt.cm.Reds)
             ax.set_title("Values Before Episode ("+str(ind)+")")
 
-            for i in xrange(sqv.RECT_WIDTH+1):
-                for j in xrange(sqv.RECT_HEIGHT+1):
+            for i in range(sqv.RECT_WIDTH+1):
+                for j in range(sqv.RECT_HEIGHT+1):
                     c = k[i, j]
                     ax.text(j, i, str(c)[:5], va='center', ha='center', size=8)
 
@@ -128,7 +128,7 @@ def plot_together(timeline, *graphs, **kwargs):
         plt.plot(timeline, graphs[0][0], **graphs[0][1])
     else:
         plt.plot(timeline, graphs[0])
-    for i in xrange(1, len(graphs)):
+    for i in range(1, len(graphs)):
         if len(graphs[i]) > 1:
             plt.plot(timeline, graphs[i][0], **graphs[i][1])
         else:

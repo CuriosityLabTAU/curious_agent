@@ -22,27 +22,27 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
     if agents is None:
         agents = []
     number_of_agents = max(number_of_agents, len(agents))
-    for i in xrange(len(agents), number_of_agents):
+    for i in range(len(agents), number_of_agents):
         agents.append(CuriousAgent(i))
 
     list_of_q = []
 
-    total_errors = [[] for _ in xrange(number_of_agents)]
+    total_errors = [[] for _ in range(number_of_agents)]
 
     agent_errors = [0] * number_of_agents
-    tds = [[] for _ in xrange(number_of_agents)]
-    errors = [[] for _ in xrange(number_of_agents)]
-    timesteps = [[] for _ in xrange(number_of_agents)]
-    rewards = [[] for _ in xrange(number_of_agents)]
-    costs = [[] for _ in xrange(number_of_agents)]
-    infos = [[] for _ in xrange(number_of_agents)]
-    epoches_errors = [[] for _ in xrange(number_of_agents)]
-    epoch_error = [[] for _ in xrange(number_of_agents)]
-    epoches_tds = [[] for _ in xrange(number_of_agents)]
-    epoch_td = [[] for _ in xrange(number_of_agents)]
-    values_before = [[np.zeros((sqv.RECT_WIDTH + 1, sqv.RECT_HEIGHT + 1)) for _ in xrange(4)] for _ in xrange(number_of_agents)]
+    tds = [[] for _ in range(number_of_agents)]
+    errors = [[] for _ in range(number_of_agents)]
+    timesteps = [[] for _ in range(number_of_agents)]
+    rewards = [[] for _ in range(number_of_agents)]
+    costs = [[] for _ in range(number_of_agents)]
+    infos = [[] for _ in range(number_of_agents)]
+    epoches_errors = [[] for _ in range(number_of_agents)]
+    epoch_error = [[] for _ in range(number_of_agents)]
+    epoches_tds = [[] for _ in range(number_of_agents)]
+    epoch_td = [[] for _ in range(number_of_agents)]
+    values_before = [[np.zeros((sqv.RECT_WIDTH + 1, sqv.RECT_HEIGHT + 1)) for _ in range(4)] for _ in range(number_of_agents)]
 
-    for t in xrange(number_of_agents):
+    for t in range(number_of_agents):
         for x in range(sqv.RECT_WIDTH + 1):
             for y in range(sqv.RECT_HEIGHT + 1):
                 env.agents[t]["loc"] = np.array([x, y])
@@ -52,7 +52,7 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
         env.agents[t]['loc'] = np.array(sqv.INIT_LOCATIONS[t])
         env.agents[t]['dir'] = np.array(sqv.INIT_DIRECTIONS[t])
 
-    for timestep in xrange(number_of_epoches * epoch_time):
+    for timestep in range(number_of_epoches * epoch_time):
         for i, agent in enumerate(agents):
             state = states[i]
             error = agent_errors[i]
@@ -69,10 +69,10 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
             list_of_q.append(deepcopy(agent.q_function.layers))
             if print_info:
                 if timestep % PRINT_STATE_PRED == 0:
-                    print "state: " + str(state)
-                    print "prediction: " + str(np.round(prediction))
+                    print("state: " + str(state))
+                    print("prediction: " + str(np.round(prediction)))
                 if timestep % PRINT_TIME_STEP == 0:
-                    print "time step: " + str(timestep)
+                    print("time step: " + str(timestep))
             if timestep % epoch_time == 0 and timestep != 0:
                 epoches_errors[i].append(epoch_error[i])
                 epoch_error[i] = []
@@ -95,13 +95,13 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
         # costs.append(np.sqrt(learner_c))
         if render:
             env.render()
-    for i in xrange(number_of_agents):
+    for i in range(number_of_agents):
         epoches_errors[i].append(epoch_error[i])
         epoches_tds[i].append(epoch_td[i])
 
-    values = [[np.zeros((sqv.RECT_WIDTH + 1, sqv.RECT_HEIGHT + 1)) for _ in xrange(4)] for _ in xrange(number_of_agents)]
+    values = [[np.zeros((sqv.RECT_WIDTH + 1, sqv.RECT_HEIGHT + 1)) for _ in range(4)] for _ in range(number_of_agents)]
 
-    for t in xrange(number_of_agents):
+    for t in range(number_of_agents):
         for x in range(sqv.RECT_WIDTH + 1):
             for y in range(sqv.RECT_HEIGHT + 1):
                 env.agents[t]["loc"] = np.array([x, y])

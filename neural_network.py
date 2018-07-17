@@ -11,7 +11,7 @@ class NeuralNetwork:
             functions = (functions,)*(len(layers_num) - 1)
         self.nonlin_funcs = functions
         layers = list(layers_num)
-        for i in xrange(len(layers)-1):
+        for i in range(len(layers)-1):
             self.layers.append(np.random.rand(layers[i], layers[i+1])-0.5)
             self.biases.append(np.random.rand(layers[i+1])-0.5)
 
@@ -27,7 +27,7 @@ class NeuralNetwork:
         inputs = []
         deltas = []
 
-        for i in xrange(len(self.layers)):
+        for i in range(len(self.layers)):
             inputs.append(input)
             input = self.nonlin_funcs[i](input.dot(self.layers[i])+self.biases[i])
 
@@ -52,7 +52,7 @@ class NeuralNetwork:
         return deltas[0].dot(self.layers[0].T)  # last delta (partial)
 
     def iteration_by_next_net(self, inputs, delta, alpha=0.01):
-        for i in xrange(len(self.layers)-1, -1, -1):
+        for i in range(len(self.layers)-1, -1, -1):
             delta *= self.nonlin_funcs[i](inputs[i+1], True)
             self.layers[i] -= inputs[i].T.dot(delta)
             delta = delta.dot(self.layers[i].T)
@@ -60,13 +60,13 @@ class NeuralNetwork:
 
     def __call__(self, input):
         inp = [input]
-        for i in xrange(len(self.layers)):
+        for i in range(len(self.layers)):
             inp.append(self.nonlin_funcs[i](inp[-1].dot(self.layers[i])+self.biases[i]))
         return inp
 
     def deltas_by_next_net(self, inputs, delta):
         deltas = []
-        for i in xrange(len(self.layers)-1, -1, -1):
+        for i in range(len(self.layers)-1, -1, -1):
             delta *= self.nonlin_funcs[i](inputs[i+1], True)
             deltas.append(delta)
             delta = delta.dot(self.layers[i].T)
@@ -75,7 +75,7 @@ class NeuralNetwork:
         return deltas  # last delta (partial)
 
     def iteration_by_deltas(self, inputs, deltas, alpha=0.01):
-        for i in xrange(len(self.layers)):
+        for i in range(len(self.layers)):
             self.layers[i] -= alpha*inputs[i].T.dot(deltas[i+1])
 
     def derivative_by_next_net(self, inputs, delta):
@@ -83,11 +83,11 @@ class NeuralNetwork:
 
     def derivative_by_deltas(self, inputs, deltas):
         derivatives = []
-        for i in xrange(len(self.layers)):
+        for i in range(len(self.layers)):
             derivatives.append(inputs[i].T.dot(deltas[i+1]))
         return derivatives
 
     def iteration_by_derivative(self, derivatives, alpha=0.01):
-        for i in xrange(len(self.layers)):
+        for i in range(len(self.layers)):
             self.layers[i] -= alpha*derivatives[i]
 

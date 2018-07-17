@@ -168,9 +168,9 @@ class CuriousAgent:
         if np.isnan(q_label).any():
             for i in self.q_function.layers:
                 if not np.isfinite(i).all():
-                    print self.q_function.layers
+                    print(self.q_function.layers)
                     raise Exception('nan occurred in q function')
-            print self.learner.layers
+            print(self.learner.layers)
             raise Exception('nan occurred in learner')
 
         # step 2 achieved

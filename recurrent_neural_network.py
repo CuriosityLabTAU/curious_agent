@@ -5,7 +5,7 @@ class RecurrentNeuralNetwork:
     @staticmethod
     def create_layers(*sizes):
         a = ((sizes[0], sizes[1]),)
-        for i in xrange(1, len(sizes)-1):
+        for i in range(1, len(sizes)-1):
             a += ((sizes[i], sizes[i+1]),)
         return a
 
@@ -23,7 +23,7 @@ class RecurrentNeuralNetwork:
         else:
             non_linear = (non_linear,)*len(layers)
         self.functions = non_linear
-        for i in xrange(len(layers)):
+        for i in range(len(layers)):
             self.U.append(np.random.rand(layers[i][0], layers[i][1])-0.5)
             self.W.append(np.random.rand(layers[i][1], layers[i][1])-0.5)
             self.B.append(np.random.rand(layers[i][1])-0.5)
@@ -36,7 +36,7 @@ class RecurrentNeuralNetwork:
             d_inp = i
             state.append(d_inp)
 
-            for j in xrange(len(self.U)):
+            for j in range(len(self.U)):
                 d_inp = self.functions[j](d_inp.dot(self.U[j])+prev_state[j+1].dot(self.W[j])+self.B[j])
                 state.append(d_inp)
 
@@ -56,9 +56,9 @@ class RecurrentNeuralNetwork:
             return
         state = states[-1]
         prev_state = states[-2]
-        for j in xrange(layer, -1, -1):
-            # print j
-            # print "delta: " + str(delta)
+        for j in range(layer, -1, -1):
+            # print(j)
+            # print("delta: " + str(delta))
             self.u_derivatives[j] += state[j].T.dot(delta)
             self.w_derivatives[j] += prev_state[j + 1].T.dot(delta)
             self.b_derivatives[j] += delta.reshape(self.b_derivatives[j].shape)
@@ -71,18 +71,18 @@ class RecurrentNeuralNetwork:
         self.u_derivatives = []
         self.w_derivatives = []
         self.b_derivatives = []
-        for i in xrange(len(self.U)):
+        for i in range(len(self.U)):
             self.u_derivatives.append(np.zeros_like(self.U[i]))
             self.w_derivatives.append(np.zeros_like(self.W[i]))
             self.b_derivatives.append(np.zeros_like(self.B[i]))
 
-        for i in xrange(len(labels)):
+        for i in range(len(labels)):
             output = self.states[i+1][-1]
             state = self.states[i+1]
             prev_state = self.states[i]
             error = output - labels[i]
             delta = error*self.functions[-1](output, True)
-            for j in xrange(len(self.U)-1, -1, -1):
+            for j in range(len(self.U)-1, -1, -1):
                 self.u_derivatives[j] += state[j].T.dot(delta)
                 self.w_derivatives[j] += prev_state[j+1].T.dot(delta)
                 self.b_derivatives[j] += delta.reshape(self.b_derivatives[j].shape)
@@ -93,14 +93,14 @@ class RecurrentNeuralNetwork:
 
     def cost(self, inp, labels):
         j = 0
-        for i in xrange(len(inp)):
+        for i in range(len(inp)):
             outputs = np.array(self.hypot(inp[i]))-np.array(labels[i])
             j += np.sum(outputs*outputs)
         return j
 
     def iteration(self, inp, label, step=3, alpha=0.001):
         def __addition(x, y):
-            for i in xrange(len(x)):
+            for i in range(len(x)):
                 x[i] += y[i]
         gu = []
         for j in self.U:
@@ -111,13 +111,13 @@ class RecurrentNeuralNetwork:
         gb = []
         for j in self.B:
             gb.append(np.zeros_like(j))
-        for j in xrange(len(inp)):
+        for j in range(len(inp)):
             self.get_gradient(inp[j], label[j], step)
             __addition(gu, self.u_derivatives)
             __addition(gb, self.b_derivatives)
             __addition(gw, self.w_derivatives)
 
-        for j in xrange(len(self.U)):
+        for j in range(len(self.U)):
             self.U[j] -= alpha * gu[j]
             self.W[j] -= alpha * gw[j]
             self.B[j] -= alpha * gb[j]

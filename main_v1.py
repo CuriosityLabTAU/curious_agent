@@ -35,7 +35,7 @@ def join_dict_list(lst):
     d = {}
     for i in lst[0]:
         d[i] = np.array(lst[0][i]) if isinstance(i, list) else lst[0][i]
-    for i in xrange(1, len(lst)):
+    for i in range(1, len(lst)):
         for j in lst[i]:
             if isinstance(d[j], np.ndarray):
                 d[j] += np.array(lst[i][j])
@@ -50,7 +50,7 @@ def main():
     d_reset = {}
     d_nontrained = {}
 
-    for i in xrange(100):
+    for i in range(100):
         agent = CuriousAgent(0)
         d = activate_agent(10, 10, render=False, print_info=False, agents=[deepcopy(agent)])
         reset_trained_agent = d['agents']
@@ -100,7 +100,7 @@ def main():
                 if isinstance(d_nontrained[j], np.ndarray) and d_nontrained[j].dtype == 'float':
                     d_nontrained[j] = (float(i)*d_nontrained[j] + np.array(d[j]))/float(i+1)
 
-        print "finished running #%i"%i
+        print("finished running #%i"%i)
 
     #draw_plots(d_reset, use_alpha=True, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
 

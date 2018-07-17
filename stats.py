@@ -14,8 +14,8 @@ ALL_DIRECTIONS = np.array([[0, 1],[1, 0],[-1, 0], [0, -1]])
 #     agent.reset_network()
 #     activate_agent(epoch_time, reset_agent=False, reset_env=False, env=env, render=render, print_info=print_info)
 #     cost_avg = 0.0
-#     for x in xrange(sqv.RECT_WIDTH):
-#         for y in xrange(sqv.RECT_HEIGHT):
+#     for x in range(sqv.RECT_WIDTH):
+#         for y in range(sqv.RECT_HEIGHT):
 #             for direction in ALL_DIRECTIONS:
 #                 for action in ALL_ACTIONS:
 #                     old_state = env._get_all_observations()[agent.index]
@@ -30,8 +30,8 @@ ALL_DIRECTIONS = np.array([[0, 1],[1, 0],[-1, 0], [0, -1]])
 def average_errors_on_trained_agent(agent, env):
     env = deepcopy(env)
     cost_avg = 0.0
-    for x in xrange(sqv.RECT_WIDTH):
-        for y in xrange(sqv.RECT_HEIGHT):
+    for x in range(sqv.RECT_WIDTH):
+        for y in range(sqv.RECT_HEIGHT):
             for direction in ALL_DIRECTIONS:
                 for action in ALL_ACTIONS:
                     old_state = env._get_all_observations()[agent.index]

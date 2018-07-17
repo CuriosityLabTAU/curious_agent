@@ -34,7 +34,7 @@ def main():
     costs = []
     infos = []
 
-    for timestep in xrange(200):
+    for timestep in range(200):
         state, error, info, td, reward, prediction = agent.take_step(env, state, error)
         errors.append(error)
         tds.append(td)
@@ -42,19 +42,19 @@ def main():
         infos.append(info)
         timesteps.append(timestep)
         if timestep % 50 == 0:
-            print "state: " + str(state)
-            print "pred:" + str(np.round(prediction))
+            print("state: " + str(state))
+            print("pred:" + str(np.round(prediction)))
         #learner_c = agent.train(300)
         #costs.append(np.sqrt(learner_c))
         env.render()
 
-    print agent.learner_alpha
-    print agent.value_alpha
-    print agent.epsilon
+    print(agent.learner_alpha)
+    print(agent.value_alpha)
+    print(agent.epsilon)
 
     locs = info_to_location(infos)
     scales = loc_to_scalar(locs)
-    print scales
+    print(scales)
     import matplotlib.pyplot as plt
     plt.figure(timesteps, scales)
     plt.plot(timesteps,tds)
