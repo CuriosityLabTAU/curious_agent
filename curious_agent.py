@@ -142,6 +142,7 @@ class CuriousAgent:
         self.learner_alpha = 1.0001 ** (self.learner_alpha-1) * self.learner_alpha
 
     def _set_q_alpha(self):
+        return
         MIN_ALPHA = 0.00001
         if self.q_alpha <= MIN_ALPHA:
             self.q_alpha = MIN_ALPHA
