@@ -36,13 +36,10 @@ AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv
 AGENT_INIT_COUNTER = 5
 # amount of steps to take before performing gradient decent on recurrent network
 
-AGENT_Q_ALPHA = 0.01
-# the learning rate of the agent's q function
-
 AGENT_INIT_EPSILON = 0.1
 # initial probability of taking a random action
 
-AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 16, 3)
+AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 5, 3)
 
 
 def linear_relu(x, d=False):
@@ -78,11 +75,9 @@ def sigmoid(x, derivative=False):
     return 1/(1+np.exp(-x))
 
 
-class CuriousAgent:
+class RandomAgent:
     def __init__(self, index):
-        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, linear_relu)
-        # input -> state
-        # output -> value(state)
+        self.q_function = NeuralNetwork((3, 3), linear)
 
         self.learner = None
         self.reset_network()
@@ -92,8 +87,6 @@ class CuriousAgent:
 
         self.gamma = AGENT_GAMMA
         self.learner_alpha = AGENT_LEARNER_ALPHA
-        self.q_alpha = AGENT_Q_ALPHA
-        self.epsilon = AGENT_INIT_EPSILON
         # hyper parameters
 
         self.index = index
@@ -103,10 +96,10 @@ class CuriousAgent:
 
     def reset_network(self):
         if IS_AGENT_RECURRENT:
-            self.learner = RecurrentNeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE_RECURRENT, relu)
+            self.learner = RecurrentNeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE_RECURRENT, linear_relu)
             self.learner.clear_states()
         else:
-            self.learner = NeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE, relu)
+            self.learner = NeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE, linear_relu)
         # input -> [state,action]
         # output -> next state
         self.learner_alpha = AGENT_LEARNER_ALPHA
@@ -130,9 +123,6 @@ class CuriousAgent:
             rand = len(self.memory)-int(np.exp(-np.random.rand())*len(self.memory))
             del self.memory[rand]
         self.memory.append(obj)
-
-    def _set_epsilon(self):
-        self.epsilon = 1.01 ** (MIN_EPSILON - self.epsilon) * self.epsilon
 
     def _set_learner_alpha(self):
         MIN_ALPHA = 0.00001
@@ -158,30 +148,11 @@ class CuriousAgent:
 
         # step 1: get state from env (achieved by input)
 
-        # step 2: get the maximum Q value
+        # step 2: choose a random action
 
-        q_label = self.q_function.hypot(state)
-
-        max_ind = np.argmax(q_label)
-
-        if np.isnan(q_label).any():
-            for i in self.q_function.layers:
-                if not np.isfinite(i).all():
-                    print self.q_function.layers
-                    raise Exception('nan occurred in q function')
-            print self.learner.layers
-            raise Exception('nan occurred in learner')
-
-        # step 2 achieved
-
-        # step 3: get the action to perform using e-greedy
-
-        if np.random.rand() < self.epsilon:
-            action = np.zeros(3)
-            max_ind = env.action_space.sample()[0]
-            action[max_ind] = 1
-        else:
-            action = ALL_ACTIONS[max_ind]
+        action = np.zeros(3)
+        max_ind = env.action_space.sample()[0]
+        action[max_ind] = 1
 
         # step 3 achieved
 
@@ -191,7 +162,7 @@ class CuriousAgent:
 
         # step 4 achieved
 
-        # step 5: calculate reward (delta square error)
+        # step 5: calculate error
 
         predicted_state_by_action = self.learner.hypot(np.array([np.concatenate((state, action))]))[0]
 
@@ -205,20 +176,8 @@ class CuriousAgent:
 
         # step 5 achieved
 
-        # step 6: remember new parameters
+        # step 6: update values and return from function
 
-        self.remember([state, action, error, observation])
-
-        # step 6 achieved
-
-        # step 7: update values and return from function
-
-        q_tag = error + self.gamma*np.amax(self.q_function.hypot(observation))
-
-        td = (q_label[max_ind]-q_tag)**2
-
-        q_label[max_ind] = q_tag
-        self.q_function.iteration(np.array([state]), q_label, alpha=self.q_alpha)
         if IS_AGENT_RECURRENT:
             if self.counter > 0:
                 self.counter -= 1
@@ -233,11 +192,9 @@ class CuriousAgent:
                                    np.array([observation]), alpha=self.learner_alpha)
 
         self._set_learner_alpha()
-        self._set_q_alpha()
-        self._set_epsilon()
         self._set_gamma()
 
-        return observation, error, info, np.sqrt(td), delta_error, predicted_state_by_action
+        return observation, error, info, 0, delta_error, predicted_state_by_action
 
     def _load_batch_for_learner(self, batch):
         input, output = [], []

@@ -10,6 +10,7 @@ import threading
 import random
 from draw_plots import draw_plots, plot_together
 from activate_agent import activate_agent
+from copy import deepcopy
 
 
 NUM_OF_EPOCHES = 20
@@ -49,19 +50,25 @@ def main():
     d_reset = {}
     d_nontrained = {}
 
-    for i in xrange(500):
-        d = activate_agent(50, 25, render=False, print_info=False)
+    for i in xrange(100):
+        agent = CuriousAgent(0)
+        d = activate_agent(10, 10, render=False, print_info=False, agents=[deepcopy(agent)])
         reset_trained_agent = d['agents']
         reset_trained_agent[0].reset_network()
+        reset_trained_agent[0].learner = deepcopy(agent.learner)
+        #reset_trained_agent[0].q_alpha = agent.q_alpha
 
 
-        d = activate_agent(50*25, reset_agent=False, render=False, print_info=False)
+        d = activate_agent(100, reset_agent=False, render=False, print_info=False, agents=[deepcopy(agent)])
         nonreset_trained_agent = d['agents']
         nonreset_trained_agent[0].reset_network()
+        nonreset_trained_agent[0].learner = deepcopy(agent.learner)
 
+        #draw_plots(get_agent_dict(d,0), plot_values_before=False, plot_values=False,plot_errors=False, plot_locations_bars=False)
+        #nonreset_trained_agent[0].q_alpha = agent.q_alpha
 
-        sqv.set_global('RECT_WIDTH', random.randint(10, 20))
-        sqv.set_global('RECT_HEIGHT', random.randint(10, 20))
+        #sqv.set_global('RECT_WIDTH', random.randint(10, 20))
+        #sqv.set_global('RECT_HEIGHT', random.randint(10, 20))
 
         d = activate_agent(100, agents=reset_trained_agent, render=False, print_info=False)
         d = get_agent_dict(d, 0)
@@ -83,7 +90,7 @@ def main():
                 if isinstance(d_nonreset[j], np.ndarray) and d_nonreset[j].dtype == 'float':
                     d_nonreset[j] = (float(i)*d_nonreset[j] + np.array(d[j]))/float(i+1)
 
-        d = activate_agent(100, render=False, print_info=False)
+        d = activate_agent(100, render=False, print_info=False, agents=[deepcopy(agent)])
         d = get_agent_dict(d, 0)
         if i == 0:
             for j in d:
@@ -105,7 +112,7 @@ def main():
                   [d_nonreset['errors'], 'non reset'], [d_reset['errors'], 'reset'], title='Errors')
 
     plot_together(d_nontrained['timesteps'], [d_nontrained['tds'], 'non trained'],
-                  [d_nonreset['tds'], 'non reset'], [d_reset['tds'], 'reset'], title='Errors')
+                  [d_nonreset['tds'], 'non reset'], [d_reset['tds'], 'reset'], title='TDs')
 
     from IPython import embed
     embed()

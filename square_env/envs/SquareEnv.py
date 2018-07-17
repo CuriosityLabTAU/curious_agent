@@ -190,7 +190,7 @@ class SquareEnv(gym.Env):
             agent["dir"] = agent["dir"][::-1]
             agent["dir"][1] = -agent["dir"][1]
 
-    def step(self, action,index = -1):
+    def step(self, action, index=-1):
         assert self.action_space.contains(action)
         if index == -1:
             action = action[np.arange(len(action)),0]-1

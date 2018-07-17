@@ -3,6 +3,8 @@ import numpy as np
 import gym
 from curious_agent import CuriousAgent
 import square_env.envs as sqv
+from copy import deepcopy
+import random
 
 
 PRINT_STATE_PRED = 50
@@ -12,14 +14,17 @@ PRINT_TIME_STEP = 500
 
 
 def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_agent=True, agents=None,
-                   render=True, print_info=True):
-    env = gym.make('square-v0')
+                   render=True, print_info=True, reset_env=False, env=None):
+    if env is None:
+        env = gym.make('square-v0')
     states = env.reset(render=render)
     if agents is None:
         agents = []
     number_of_agents = max(number_of_agents, len(agents))
     for i in xrange(len(agents), number_of_agents):
         agents.append(CuriousAgent(i))
+
+    list_of_q = []
 
     agent_errors = [0] * number_of_agents
     tds = [[] for _ in xrange(number_of_agents)]
@@ -58,6 +63,7 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
             timesteps[i].append(timestep)
             epoch_td[i].append(td)
             epoch_error[i].append(error)
+            list_of_q.append(deepcopy(agent.q_function.layers))
             if print_info:
                 if timestep % PRINT_STATE_PRED == 0:
                     print "state: " + str(state)
@@ -72,6 +78,13 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                 agent.reset_network()
                 env.agents[i]["loc"] = env.square_space.sample()
                 states[i] = env._get_all_observations()[i]
+            if reset_env and i + 1 == len(agents) and timestep % epoch_time == 0 and timestep != 0:
+                if render:
+                    env.close()
+                sqv.set_global('RECT_WIDTH', random.randint(10, 20))
+                sqv.set_global('RECT_HEIGHT', random.randint(10, 20))
+                env = gym.make('square-v0')
+                states = env.reset(render=render)
         # learner_c = agent.train(300)
         # costs.append(np.sqrt(learner_c))
         if render:
