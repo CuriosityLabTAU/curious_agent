@@ -125,15 +125,18 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
 def plot_together(timeline, *graphs, **kwargs):
     if len(graphs[0]) > 1:
-        plt.plot(timeline, graphs[0][0], label=graphs[0][1])
+        plt.plot(timeline, graphs[0][0], **graphs[0][1])
     else:
         plt.plot(timeline, graphs[0])
     for i in xrange(1, len(graphs)):
-        if len(graphs[i]) > 1 and isinstance(graphs[i][1], str):
-            plt.plot(timeline, graphs[i][0], label=graphs[i][1])
+        if len(graphs[i]) > 1:
+            plt.plot(timeline, graphs[i][0], **graphs[i][1])
         else:
             plt.plot(timeline, graphs[i])
-    if kwargs['title'] is not None:
+    if 'std' in kwargs:
+        for i, s in enumerate(kwargs['std']):
+            plt.fill_between(timeline, graphs[i][0] + s, graphs[i][0] - s, alpha=0.5, facecolor=graphs[i][1]['color'])
+    if 'title' in kwargs:
         plt.title(kwargs['title'])
     plt.legend()
     plt.show()

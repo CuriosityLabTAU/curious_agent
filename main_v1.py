@@ -108,11 +108,11 @@ def main():
 
     #draw_plots(d_nontrained, use_alpha=False, plot_locs_on_errors=False, plot_locs_on_tds=False, plot_values=False, plot_values_before=False)
 
-    plot_together(d_nontrained['timesteps'], [d_nontrained['errors'], 'non trained'],
-                  [d_nonreset['errors'], 'non reset'], [d_reset['errors'], 'reset'], title='Errors')
+    plot_together(d_nontrained['timesteps'], [d_nontrained['errors'], {'label':'non trained'}],
+                  [d_nonreset['errors'], {'label':'non reset'}], [d_reset['errors'], {'label':'reset'}], title='Errors')
 
-    plot_together(d_nontrained['timesteps'], [d_nontrained['tds'], 'non trained'],
-                  [d_nonreset['tds'], 'non reset'], [d_reset['tds'], 'reset'], title='TDs')
+    plot_together(d_nontrained['timesteps'], [d_nontrained['tds'], {'label':'non trained'}],
+                  [d_nonreset['tds'], {'label':'non reset'}], [d_reset['tds'], {'label':'reset'}], title='TDs')
 
     from IPython import embed
     embed()

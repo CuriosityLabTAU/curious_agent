@@ -52,7 +52,7 @@ def main():
     agent_dict = []
     random_dict = []
 
-    for i in xrange(10):
+    for i in xrange(50):
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.relu)
         curious_agent = CuriousAgent(0)
         activate_agent(100, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
@@ -70,6 +70,16 @@ def main():
 
         print "finished running #%i"%i
 
+    a = []
+    for i in agent_dict:
+        a.append(i['total_errors'])
+    std_agent = np.array(a).std(axis=0)
+
+    a = []
+    for i in random_dict:
+        a.append(i['total_errors'])
+    std_random = np.array(a).std(axis=0)
+
     agent_dict = join_dict_list(agent_dict)
     #draw_plots(agent_dict)
     random_dict = join_dict_list(random_dict)
@@ -78,7 +88,8 @@ def main():
     errors_rate_curious = agent_dict['total_errors']
     errors_rate_random = random_dict['total_errors']
 
-    plot_together(agent_dict['timesteps'], [errors_rate_curious, 'curious'], [errors_rate_random, 'random'], title='Total Errors')
+    plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
+                  [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors', std=[std_agent, std_random])
 
     from IPython import embed
     embed()
