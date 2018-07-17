@@ -52,12 +52,13 @@ def main():
     agent_dict = []
     random_dict = []
 
-    for i in xrange(500):
+    for i in xrange(50):
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.relu)
         curious_agent = CuriousAgent(0)
         curious_agent.learner = deepcopy(learner)
         activate_agent(100, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
 
+        curious_agent.reset_network()
         d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=[curious_agent], get_avg_errors=True)
         agent_dict.append(get_agent_dict(d))
 
