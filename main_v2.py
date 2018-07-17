@@ -68,7 +68,7 @@ def main():
 
         random_dict.append(get_agent_dict(d))
 
-        print "finished running #%i"%i
+        print "finished running #%i" % (i+1)
 
     a = []
     for i in agent_dict:
