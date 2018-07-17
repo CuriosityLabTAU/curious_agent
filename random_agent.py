@@ -27,7 +27,7 @@ AGENT_GAMMA = 0.9
 AGENT_LEARNER_ALPHA = 0.01
 # the learning rate of the agent's learner
 
-AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 10, sqv.OBSERVATION_SIZE)
+AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 16, sqv.OBSERVATION_SIZE)
 # a tuple of the agent learner's neural network's layers sizes if it is not recurrent
 
 AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv.OBSERVATION_SIZE + 3, 10, sqv.OBSERVATION_SIZE)

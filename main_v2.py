@@ -58,20 +58,26 @@ def main():
         curious_agent.learner = deepcopy(learner)
         activate_agent(100, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
 
-        d = activate_agent(100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
+        d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=[curious_agent], get_avg_errors=True)
         agent_dict.append(get_agent_dict(d))
 
         random_agent = RandomAgent(0)
         random_agent.learner = deepcopy(learner)
-        d = activate_agent(100, render=False, print_info=False, reset_env=True, agents=[random_agent])
+        d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=[random_agent], get_avg_errors=True)
 
         random_dict.append(get_agent_dict(d))
 
         print "finished running #%i"%i
 
-    draw_plots(join_dict_list(agent_dict))
-    draw_plots(join_dict_list(random_dict))
+    agent_dict = join_dict_list(agent_dict)
+    draw_plots(agent_dict)
+    random_dict = join_dict_list(random_dict)
+    draw_plots(random_dict)
 
+    errors_rate_curious = agent_dict['total_errors']
+    errors_rate_random = random_dict['total_errors']
+
+    plot_together(agent_dict['timesteps'], [errors_rate_curious, 'curious'], [errors_rate_random, 'random'], title='Total Errors')
 
     from IPython import embed
     embed()

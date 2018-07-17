@@ -5,6 +5,7 @@ from curious_agent import CuriousAgent
 import square_env.envs as sqv
 from copy import deepcopy
 import random
+import stats
 
 
 PRINT_STATE_PRED = 50
@@ -14,7 +15,7 @@ PRINT_TIME_STEP = 500
 
 
 def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_agent=True, agents=None,
-                   render=True, print_info=True, reset_env=False, env=None):
+                   render=True, print_info=True, reset_env=False, env=None, get_avg_errors=False):
     if env is None:
         env = gym.make('square-v0')
     states = env.reset(render=render)
@@ -25,6 +26,8 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
         agents.append(CuriousAgent(i))
 
     list_of_q = []
+
+    total_errors = [[] for _ in xrange(number_of_agents)]
 
     agent_errors = [0] * number_of_agents
     tds = [[] for _ in xrange(number_of_agents)]
@@ -70,14 +73,15 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                     print "prediction: " + str(np.round(prediction))
                 if timestep % PRINT_TIME_STEP == 0:
                     print "time step: " + str(timestep)
-            if timestep % epoch_time == 0 and timestep != 0 and reset_agent:
+            if timestep % epoch_time == 0 and timestep != 0:
                 epoches_errors[i].append(epoch_error[i])
                 epoch_error[i] = []
                 epoches_tds[i].append(epoch_td[i])
                 epoch_td[i] = []
-                agent.reset_network()
-                env.agents[i]["loc"] = env.square_space.sample()
-                states[i] = env._get_all_observations()[i]
+                if reset_agent:
+                    agent.reset_network()
+                    env.agents[i]["loc"] = env.square_space.sample()
+                    states[i] = env._get_all_observations()[i]
             if reset_env and i + 1 == len(agents) and timestep % epoch_time == 0 and timestep != 0:
                 if render:
                     env.close()
@@ -85,6 +89,8 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                 sqv.set_global('RECT_HEIGHT', random.randint(10, 20))
                 env = gym.make('square-v0')
                 states = env.reset(render=render)
+            if get_avg_errors:
+                total_errors[i].append(stats.average_errors_on_trained_agent(agent, env))
         # learner_c = agent.train(300)
         # costs.append(np.sqrt(learner_c))
         if render:
@@ -118,5 +124,6 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
     ret['epoches_tds'] = epoches_tds
     ret['values_before'] = values_before
     ret['values'] = values
+    ret['total_errors'] = total_errors
 
     return ret
