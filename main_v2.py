@@ -27,6 +27,17 @@ EPOCH_TIME = 100
 NUMBER_OF_AGENTS = 1
 
 
+def add_avg_dict(src, d, i):
+    if i == 0:
+        for j in d:
+            src[j] = np.array(d[j]) if isinstance(d[j], list) else d[j]
+    else:
+        for j in src:
+            if isinstance(src[j], np.ndarray) and src[j].dtype == 'float':
+                src[j] = (float(i) * src[j] + np.array(d[j])) / float(i + 1)
+
+
+
 def get_agent_dict(all_agents_dict, index=0):
     d = {}
     for i in all_agents_dict:
@@ -52,10 +63,10 @@ def main():
     agent_dict = []
     random_dict = []
 
-    for i in range(500):
-        learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.relu)
+    for i in range(30):
+        learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.1, max=0.1)
         curious_agent = CuriousAgent(0)
-        activate_agent(100, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
+        activate_agent(15, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
 
         curious_agent.reset_network()
         curious_agent.learner = deepcopy(learner)
@@ -91,8 +102,8 @@ def main():
     plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
                   [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors', std=[std_agent, std_random])
 
-    from IPython import embed
-    embed()
+    #from IPython import embed
+    #embed()
 
 
 if __name__ == "__main__":

@@ -21,10 +21,10 @@ MIN_EPSILON = 0.0005
 ALL_ACTIONS = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 # an array of all the possible actions to take
 
-AGENT_GAMMA = 0.9
+AGENT_GAMMA = 0.0
 # the init gamma variable of the agent
 
-AGENT_LEARNER_ALPHA = 0.01
+AGENT_LEARNER_ALPHA = 0.02
 # the learning rate of the agent's learner
 
 AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 16, sqv.OBSERVATION_SIZE)
@@ -80,7 +80,7 @@ def sigmoid(x, derivative=False):
 
 class CuriousAgent:
     def __init__(self, index):
-        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, linear_relu)
+        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, linear_relu)# , min=-0.1, max=0.1)
         # input -> state
         # output -> value(state)
 
@@ -97,7 +97,7 @@ class CuriousAgent:
         # hyper parameters
 
         self.index = index
-        # index of the agent in the enviroment's agents array
+        # index of the agent in the environment's agents array
 
         self.counter = AGENT_INIT_COUNTER
 
@@ -106,7 +106,7 @@ class CuriousAgent:
             self.learner = RecurrentNeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE_RECURRENT, relu)
             self.learner.clear_states()
         else:
-            self.learner = NeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE, relu)
+            self.learner = NeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE, linear_relu, min=-0.1, max=0.1)
         # input -> [state,action]
         # output -> next state
         self.learner_alpha = AGENT_LEARNER_ALPHA
@@ -135,6 +135,7 @@ class CuriousAgent:
         self.epsilon = 1.01 ** (MIN_EPSILON - self.epsilon) * self.epsilon
 
     def _set_learner_alpha(self):
+        return
         MIN_ALPHA = 0.00001
         if self.learner_alpha <= MIN_ALPHA:
             self.learner_alpha = MIN_ALPHA
