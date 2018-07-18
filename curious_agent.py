@@ -21,13 +21,13 @@ MIN_EPSILON = 0.0005
 ALL_ACTIONS = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 # an array of all the possible actions to take
 
-AGENT_GAMMA = 0.0
+AGENT_GAMMA = 0.9
 # the init gamma variable of the agent
 
-AGENT_LEARNER_ALPHA = 0.02
+AGENT_LEARNER_ALPHA = 0.005
 # the learning rate of the agent's learner
 
-AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 16, sqv.OBSERVATION_SIZE)
+AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 10, sqv.OBSERVATION_SIZE)
 # a tuple of the agent learner's neural network's layers sizes if it is not recurrent
 
 AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv.OBSERVATION_SIZE + 3, 10, sqv.OBSERVATION_SIZE)
@@ -36,13 +36,15 @@ AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv
 AGENT_INIT_COUNTER = 5
 # amount of steps to take before performing gradient decent on recurrent network
 
-AGENT_Q_ALPHA = 0.01
+AGENT_Q_ALPHA = 0.1
 # the learning rate of the agent's q function
 
 AGENT_INIT_EPSILON = 0.1
 # initial probability of taking a random action
 
-AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 16, 3)
+AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 8, 3)
+
+REWARD_FACTOR = 10.0
 
 
 def linear_relu(x, d=False):
@@ -215,12 +217,9 @@ class CuriousAgent:
 
         # step 7: update values and return from function
 
-        q_tag = error + self.gamma*np.amax(self.q_function.hypot(observation))
+        cost_before = self.learner.cost(np.array([np.concatenate((state, action))]),
+                               np.array([observation]))
 
-        td = (q_label[max_ind]-q_tag)**2
-
-        q_label[max_ind] = q_tag
-        self.q_function.iteration(np.array([state]), q_label, alpha=self.q_alpha)
         if IS_AGENT_RECURRENT:
             if self.counter > 0:
                 self.counter -= 1
@@ -233,6 +232,17 @@ class CuriousAgent:
         else:
             self.learner.iteration(np.array([np.concatenate((state, action))]),
                                    np.array([observation]), alpha=self.learner_alpha)
+
+        cost_after = self.learner.cost(np.array([np.concatenate((state, action))]),
+                               np.array([observation]))
+
+        q_tag = self.gamma*np.amax(self.q_function.hypot(observation)) + error #linear_relu(REWARD_FACTOR*(cost_before-cost_after))
+
+        td = (q_label[max_ind]-q_tag)**2
+
+        q_label[max_ind] = q_tag
+        self.q_function.iteration(np.array([state]), q_label, alpha=self.q_alpha)
+
 
         self._set_learner_alpha()
         self._set_q_alpha()

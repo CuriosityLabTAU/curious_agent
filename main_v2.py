@@ -63,19 +63,21 @@ def main():
     agent_dict = []
     random_dict = []
 
-    for i in range(30):
+    random_agent = RandomAgent(0)
+    rnd_ag_list = [random_agent]
+    for i in range(5):
+
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.1, max=0.1)
         curious_agent = CuriousAgent(0)
-        activate_agent(15, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent])
+        activate_agent(20, 50, render=False, print_info=False, reset_env=True, agents=[curious_agent])
 
         curious_agent.reset_network()
         curious_agent.learner = deepcopy(learner)
         d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=[curious_agent], get_avg_errors=True)
         agent_dict.append(get_agent_dict(d))
 
-        random_agent = RandomAgent(0)
-        random_agent.learner = deepcopy(learner)
-        d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=[random_agent], get_avg_errors=True)
+        random_agent.learner = learner
+        d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=rnd_ag_list, get_avg_errors=True)
 
         random_dict.append(get_agent_dict(d))
 
@@ -102,8 +104,8 @@ def main():
     plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
                   [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors', std=[std_agent, std_random])
 
-    #from IPython import embed
-    #embed()
+    from IPython import embed
+    embed()
 
 
 if __name__ == "__main__":
