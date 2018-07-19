@@ -55,22 +55,26 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
     colormap = plt.cm.jet
 
     if plot_tds:
+        plt.figure('TDs Total')
         plt.plot(timesteps, tds)
         if plot_locs_on_tds:
             plt.plot(timesteps, scales*((np.amax(tds)-1)/4))
-        plt.title("TDS")
+        plt.title('TDS')
         plt.axis([min(timesteps), max(timesteps), min(tds), max(tds)])
 
+
         fig, ax = plt.subplots(1, 1)
+        fig.canvas.set_window_title('TDs Over Epochs')
 
         for i, td in enumerate(epoches_tds):
             ax.plot(np.arange(len(td)), td, label='epoch: ' + str(i), c=colormap(i*epoches_factor),
                     alpha=min(1.0 / (len(epoches_errors) - i) + 0.1, 1.0) if use_alpha else 1.0)
-        ax.set_title("TDs")
+        ax.set_title('TDs')
         plt.legend()
 
     if plot_errors:
         fig, ax = plt.subplots(1, 1)
+        fig.canvas.set_window_title('Errors Total')
         ax.plot(timesteps, errors, label='error')
         if plot_locs_on_errors:
             ax.plot(timesteps, scales*((np.amax(errors)-1)/4), label = 'location')
@@ -80,6 +84,7 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
         plt.legend()
 
         fig, ax = plt.subplots(1, 1)
+        fig.canvas.set_window_title('Errors Over Epochs')
         for i, error in enumerate(epoches_errors):
             ax.plot(np.arange(len(error)), error, label='epoch: '+str(i), c=colormap(i*epoches_factor),
                     alpha=min(1.0/(len(epoches_errors)-i)+0.1, 1.0) if use_alpha else 1.0)
@@ -91,9 +96,11 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
     style.use("classic")
 
     if plot_values:
+
         for ind, k in enumerate(values):
             fig, ax = plt.subplots()
-            ax.set_title("Values ("+str(ind)+")")
+            fig.canvas.set_window_title('Values (%i)' % ind)
+            ax.set_title("Values (%i)" % ind)
             ax.matshow(k,cmap=plt.cm.Blues)
 
             for i in range(sqv.RECT_WIDTH+1):
@@ -105,7 +112,8 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
         for ind, k in enumerate(values_before):
             fig, ax = plt.subplots()
             ax.matshow(k, cmap=plt.cm.Reds)
-            ax.set_title("Values Before Episode ("+str(ind)+")")
+            fig.canvas.set_window_title('Values Before Episode (%i)' % ind)
+            ax.set_title("Values Before Episode (%i)" % ind)
 
             for i in range(sqv.RECT_WIDTH+1):
                 for j in range(sqv.RECT_HEIGHT+1):
@@ -116,6 +124,7 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
     if plot_locations_bars:
         fig, ax = plt.subplots()
+        fig.canvas.set_window_title('Locations')
 
         plt.bar(np.arange(3), lc)
         plt.xticks(np.arange(3), ('Middle', 'Wall', 'Corner'))
@@ -124,19 +133,25 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
 
 def plot_together(timeline, *graphs, **kwargs):
+    fig, ax = plt.subplots()
     if len(graphs[0]) > 1:
-        plt.plot(timeline, graphs[0][0], **graphs[0][1])
+        ax.plot(timeline, graphs[0][0], **graphs[0][1])
     else:
-        plt.plot(timeline, graphs[0])
+        ax.plot(timeline, graphs[0])
     for i in range(1, len(graphs)):
         if len(graphs[i]) > 1:
-            plt.plot(timeline, graphs[i][0], **graphs[i][1])
+            ax.plot(timeline, graphs[i][0], **graphs[i][1])
         else:
-            plt.plot(timeline, graphs[i])
+            ax.plot(timeline, graphs[i])
     if 'std' in kwargs:
         for i, s in enumerate(kwargs['std']):
-            plt.fill_between(timeline, graphs[i][0] + s, graphs[i][0] - s, alpha=0.5, facecolor=graphs[i][1]['color'])
+            ax.fill_between(timeline, graphs[i][0] + s, graphs[i][0] - s, alpha=0.5, facecolor=graphs[i][1]['color'])
     if 'title' in kwargs:
-        plt.title(kwargs['title'])
-    plt.legend()
-    plt.show()
+        ax.set_title(kwargs['title'])
+        fig.canvas.set_window_title(kwargs['title'])
+    if 'means' in kwargs:
+        for i, lines in enumerate(kwargs['means']):
+            for line in lines:
+                ax.plot(timeline, line, alpha=0.1, color=graphs[i][1]['color'])
+    ax.legend()
+    return fig, ax

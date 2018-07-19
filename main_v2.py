@@ -14,7 +14,7 @@ from activate_agent import activate_agent
 from copy import deepcopy
 from random_agent import RandomAgent
 from neural_network import NeuralNetwork
-
+import datetime
 
 NUM_OF_EPOCHES = 100
 
@@ -37,7 +37,6 @@ def add_avg_dict(src, d, i):
                 src[j] = (float(i) * src[j] + np.array(d[j])) / float(i + 1)
 
 
-
 def get_agent_dict(all_agents_dict, index=0):
     d = {}
     for i in all_agents_dict:
@@ -48,14 +47,16 @@ def get_agent_dict(all_agents_dict, index=0):
 def join_dict_list(lst):
     d = {}
     for i in lst[0]:
-        d[i] = np.array(lst[0][i]) if isinstance(i, list) else lst[0][i]
+        if isinstance(lst[0][i], list):
+            d[i] = np.array(lst[0][i])
+            if d[i].dtype == 'float':
+                d[i] /= len(lst)
+        else:
+            d[i] = lst[0][i]
     for i in range(1, len(lst)):
         for j in lst[i]:
-            if isinstance(d[j], np.ndarray):
-                d[j] += np.array(lst[i][j])
-    for i in d:
-        if isinstance(d[i],np.ndarray):
-            d[i] /= float(len(lst))
+            if isinstance(d[j], np.ndarray) and d[j].dtype == 'float':
+                d[j] += np.array(lst[i][j]) / len(lst)
     return d
 
 
@@ -65,33 +66,38 @@ def main():
 
     random_agent = RandomAgent(0)
     rnd_ag_list = [random_agent]
-    for i in range(5):
+    print('began running at %s' %  datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
+    for i in range(20):
 
-        learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.1, max=0.1)
+        learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.2, max=0.2)
         curious_agent = CuriousAgent(0)
-        activate_agent(20, 50, render=False, print_info=False, reset_env=True, agents=[curious_agent])
+        #sqv.set_global('AGENTS_COUNT', 1)
+        activate_agent(30, 100, render=False, print_info=False, reset_env=True, agents=[curious_agent], set_cube=4)
 
+        #sqv.set_global('AGENTS_COUNT', 5)
         curious_agent.reset_network()
         curious_agent.learner = deepcopy(learner)
-        d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=[curious_agent], get_avg_errors=True)
+        d = activate_agent(150, render=False, print_info=False, reset_env=False, agents=[curious_agent], get_avg_errors=True)
         agent_dict.append(get_agent_dict(d))
 
         random_agent.learner = learner
-        d = activate_agent(100, render=False, print_info=False, reset_env=False, agents=rnd_ag_list, get_avg_errors=True)
+        d = activate_agent(150, render=False, print_info=False, reset_env=False, agents=rnd_ag_list, get_avg_errors=True)
 
         random_dict.append(get_agent_dict(d))
 
-        print("finished running #%i" % (i+1))
+        print('finished running #%i at %s' % (i, datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S")))
 
-    a = []
+    means_curious = []
     for i in agent_dict:
-        a.append(i['total_errors'])
-    std_agent = np.array(a).std(axis=0)
+        means_curious.append(i['total_errors'])
+    std_agent = np.array(means_curious).std(axis=0)
 
-    a = []
+    means_random = []
     for i in random_dict:
-        a.append(i['total_errors'])
-    std_random = np.array(a).std(axis=0)
+        means_random.append(i['total_errors'])
+    std_random = np.array(means_random).std(axis=0)
+
+
 
     agent_dict = join_dict_list(agent_dict)
     #draw_plots(agent_dict)
@@ -101,11 +107,21 @@ def main():
     errors_rate_curious = agent_dict['total_errors']
     errors_rate_random = random_dict['total_errors']
 
-    plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
-                  [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors', std=[std_agent, std_random])
 
-    from IPython import embed
-    embed()
+    fig1, ax1 = plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
+                  [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors STD',
+                  std=[std_agent, std_random])
+
+    fig2, ax2 = plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label': 'curious', 'color': 'blue'}],
+                  [errors_rate_random, {'label': 'random', 'color': 'red'}], title='Total Errors Means',
+                  means=[means_curious, means_random])
+
+    fig1.savefig('./plots/std.png')
+    fig2.savefig('./plots/means.png')
+    plt.show()
+
+    #from IPython import embed
+    #embed()
 
 
 if __name__ == "__main__":

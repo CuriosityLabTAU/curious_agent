@@ -3,9 +3,10 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
+DETECT_COLLISION = False
 
-RECT_WIDTH = 10
-RECT_HEIGHT = 10
+RECT_WIDTH = 15
+RECT_HEIGHT = 15
 
 AGENT_DRAWING_SIZE = 10
 DRAWING_RECT_BEGIN = 100
@@ -15,11 +16,11 @@ OBSERVATION_SIZE = 3
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 500
 
-INIT_LOCATIONS = [[5, 5]]
-INIT_DIRECTIONS = [[1, 0]]
+INIT_LOCATIONS = [[5, 5], [3, 9], [20, 12], [9, 14], [5, 11]]
+INIT_DIRECTIONS = [[1, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
 
 
-AGENTS_COUNT = 1
+AGENTS_COUNT = 5
 
 def set_global(name, val):
     globals()[name] = val
@@ -29,7 +30,7 @@ class SquareEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     def __init__(self):
 
-        self.observation_space = spaces.Box(-30, 10, [3], dtype="int32")
+        self.observation_space = spaces.Box(0, max(RECT_WIDTH, RECT_HEIGHT), [3], dtype="int32")
         # agent's distance from each wall where the wall he is not looking at
         # is -30
 
@@ -181,8 +182,9 @@ class SquareEnv(gym.Env):
             agent["dir"][0] = -agent["dir"][0]
 
         elif action == 0:
-            if self._collides(agent['loc'] + agent['dir']):
-                return
+            if DETECT_COLLISION:
+                if self._collides(agent['loc'] + agent['dir']):
+                    return
             if self._in_bounds(agent["loc"]+agent["dir"]):
                 agent["loc"] += agent["dir"]
 
