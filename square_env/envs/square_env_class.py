@@ -3,7 +3,7 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-DETECT_COLLISION = False
+DETECT_COLLISION = True
 
 RECT_WIDTH = 15
 RECT_HEIGHT = 15
@@ -16,11 +16,12 @@ OBSERVATION_SIZE = 3
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 500
 
-INIT_LOCATIONS = [[5, 5], [3, 9], [20, 12], [9, 14], [5, 11]]
-INIT_DIRECTIONS = [[1, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+INIT_LOCATIONS = [[5, 5], [3, 9], [15, 12], [9, 14], [5, 11]]
+INIT_DIRECTIONS = [[1, 0], [0, -1], [0, 0], [0, 0], [0, 0]]
 
 
-AGENTS_COUNT = 5
+AGENTS_COUNT = 2
+
 
 def set_global(name, val):
     globals()[name] = val

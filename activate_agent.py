@@ -15,7 +15,9 @@ PRINT_TIME_STEP = 500
 
 
 def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_agent=True, agents=None,
-                   render=True, print_info=True, reset_env=False, env=None, get_avg_errors=False, set_cube=0):
+                   render=True, print_info=True, reset_env=False, env=None, get_avg_errors=False, set_cube=0,
+                   get_values_field=False, moving_walls_amount=0, moving_wall_start_index=0, init_learners=None,
+                   get_last_step_avg_error=False, number_of_error_agents=1):
     if env is None:
         env = gym.make('square-v0')
     states = env.reset(render=render)
@@ -28,6 +30,7 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
     list_of_q = []
 
     total_errors = [[] for _ in range(number_of_agents)]
+    last_errors = [[] for _ in range(number_of_agents)]
 
     agent_errors = [0] * number_of_agents
     tds = [[] for _ in range(number_of_agents)]
@@ -78,8 +81,12 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                 epoch_error[i] = []
                 epoches_tds[i].append(epoch_td[i])
                 epoch_td[i] = []
+                if get_last_step_avg_error and i < number_of_error_agents:
+                    last_errors[i].append(stats.average_errors_on_trained_agent(agent, env))
                 if reset_agent:
                     agent.reset_network()
+                    if init_learners is not None:
+                        agent.learner = deepcopy(init_learners[i])
                     env.agents[i]["loc"] = env.square_space.sample()
                     states[i] = env._get_all_observations()[i]
             if reset_env and i + 1 == len(agents) and timestep % epoch_time == 0 and timestep != 0:
@@ -89,9 +96,12 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                 sqv.set_global('RECT_HEIGHT', random.randint(15, 15))
                 env = gym.make('square-v0')
                 states = env.reset(render=render)
+                for c in range(moving_walls_amount):
+                    sqv.INIT_LOCATIONS[c + moving_wall_start_index] = env.square_space.sample()
+                    sqv.INIT_DIRECTIONS[c + moving_wall_start_index] = random.choice(stats.ALL_DIRECTIONS)
                 for c in range(set_cube):
-                    sqv.INIT_LOCATIONS[c+number_of_agents] = env.square_space.sample()
-            if get_avg_errors:
+                    sqv.INIT_LOCATIONS[c + number_of_agents + moving_walls_amount] = env.square_space.sample()
+            if get_avg_errors and i < number_of_error_agents:
                 total_errors[i].append(stats.average_errors_on_trained_agent(agent, env))
         # learner_c = agent.train(300)
         # costs.append(np.sqrt(learner_c))
@@ -115,6 +125,16 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
         env.close()
 
     ret = {}
+    if get_values_field:
+        q = []
+        cs = []
+        for i in agents:
+            v, c = stats.get_agent_value_field(i, env)
+            q.append(v)
+            cs.append(c)
+        ret['fields'] = q
+        ret['fields_colors'] = cs
+
     ret['agents'] = agents
     ret['tds'] = tds
     ret['errors'] = errors
@@ -127,5 +147,6 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
     ret['values_before'] = values_before
     ret['values'] = values
     ret['total_errors'] = total_errors
+    ret['last_errors'] = last_errors
 
     return ret

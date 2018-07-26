@@ -65,29 +65,16 @@ def join_dict_list(lst):
 def main():
     agent_dict = []
     random_dict = []
-
     random_agent = RandomAgent(0)
     wall1, wall2 = MovingCube(1), MovingCube(2)
     rnd_ag_list = [random_agent, wall1]
     print('began running at %s' %  datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
     for i in range(5):
 
-        learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.1, max=0.1)
-        curious_agent = CuriousAgent(0)
-        activate_agent(10, 1000, render=False, print_info=False, reset_env=True, agents=[curious_agent, wall1],
-                        moving_wall_start_index=1, moving_walls_amount=1)
 
-        curious_agent.reset_network()
-        curious_agent.learner = deepcopy(learner)
-        d = activate_agent(40, render=False, print_info=False, reset_env=False, agents=[curious_agent, wall1], get_avg_errors=True,
-                           get_values_field=True, moving_wall_start_index=1, moving_walls_amount=1, number_of_error_agents=1)
+        d = activate_agent(10000, render=True, print_info=False, reset_env=True, number_of_agents=2, get_avg_errors=False,
+                           get_values_field=False, number_of_error_agents=1)
         agent_dict.append(get_agent_dict(d))
-
-        random_agent.learner = learner
-        d = activate_agent(40, render=False, print_info=False, reset_env=False, agents=rnd_ag_list, get_avg_errors=True, moving_wall_start_index=1,
-                       moving_walls_amount=1, number_of_error_agents=1)
-
-        random_dict.append(get_agent_dict(d))
 
         print('finished running #%i at %s' % (i + 1, datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S")))
 

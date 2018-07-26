@@ -24,10 +24,10 @@ ALL_ACTIONS = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 AGENT_GAMMA = 0.9
 # the init gamma variable of the agent
 
-AGENT_LEARNER_ALPHA = 0.001
+AGENT_LEARNER_ALPHA = 0.01
 # the learning rate of the agent's learner
 
-AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 32, 32, sqv.OBSERVATION_SIZE)
+AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 16, sqv.OBSERVATION_SIZE)
 # a tuple of the agent learner's neural network's layers sizes if it is not recurrent
 
 AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv.OBSERVATION_SIZE + 3, 10, sqv.OBSERVATION_SIZE)
@@ -36,13 +36,13 @@ AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv
 AGENT_INIT_COUNTER = 5
 # amount of steps to take before performing gradient decent on recurrent network
 
-AGENT_Q_ALPHA = 0.01
+AGENT_Q_ALPHA = 0.001
 # the learning rate of the agent's q function
 
 AGENT_INIT_EPSILON = 0.1
 # initial probability of taking a random action
 
-AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 32, 16, 3)
+AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 8, 3)
 
 REWARD_FACTOR = 10.0
 
@@ -108,7 +108,7 @@ class CuriousAgent:
             self.learner = RecurrentNeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE_RECURRENT, relu)
             self.learner.clear_states()
         else:
-            self.learner = NeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE, linear_relu, min=-0.5, max=0.5)
+            self.learner = NeuralNetwork(AGENT_LEARNER_NETWORK_SHAPE, linear_relu, min=-0.1, max=0.1)
         # input -> [state,action]
         # output -> next state
         self.learner_alpha = AGENT_LEARNER_ALPHA

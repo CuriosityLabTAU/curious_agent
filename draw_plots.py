@@ -133,7 +133,7 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
 
 def plot_together(timeline, *graphs, **kwargs):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(1, 1)
     if len(graphs[0]) > 1:
         ax.plot(timeline, graphs[0][0], **graphs[0][1])
     else:
@@ -145,7 +145,7 @@ def plot_together(timeline, *graphs, **kwargs):
             ax.plot(timeline, graphs[i])
     if 'std' in kwargs:
         for i, s in enumerate(kwargs['std']):
-            ax.fill_between(timeline, graphs[i][0] + s, graphs[i][0] - s, alpha=0.5, facecolor=graphs[i][1]['color'])
+            ax.fill_between(timeline, graphs[i][0] + s, graphs[i][0] - s, alpha=0.2, facecolor=graphs[i][1]['color'])
     if 'title' in kwargs:
         ax.set_title(kwargs['title'])
         fig.canvas.set_window_title(kwargs['title'])
@@ -153,5 +153,14 @@ def plot_together(timeline, *graphs, **kwargs):
         for i, lines in enumerate(kwargs['means']):
             for line in lines:
                 ax.plot(timeline, line, alpha=0.1, color=graphs[i][1]['color'])
+    if 'axis_labels' in kwargs:
+        ax.set(xlabel=kwargs['axis_labels'][0], ylabel=kwargs['axis_labels'][1])
     ax.legend()
     return fig, ax
+
+
+def plot_field(x, y, u, v, title='', color=None):
+    fig, ax = plt.subplots(1, 1)
+    ax.set_title(title)
+    q = ax.quiver(x, y, u, v, color=color)
+    return fig, ax, q
