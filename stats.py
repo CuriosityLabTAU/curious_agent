@@ -93,3 +93,17 @@ def create_bernuli_moving_window(n):
         w.append((factorial(n)/(factorial(k)*factorial(n-k)))*(0.5**n))
 
     return w
+
+def get_color_map(agent):
+    color_map = []
+    length = max(sqv.RECT_WIDTH, sqv.RECT_HEIGHT)
+    for f in range(length):
+        color_map.append([])
+        for l in range(length):
+            color_map[-1].append([])
+            for r in range(length):
+                score = agent.q_function.hypot(np.array([[l,f,r]]))[0].reshape(3)
+                a = np.linalg.norm(score)
+                color_map[-1][-1].append(score/(a if a > 0.0 else 1.0))
+        color_map[-1] = np.array(color_map[-1])
+    return color_map

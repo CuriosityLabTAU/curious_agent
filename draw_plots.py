@@ -164,3 +164,12 @@ def plot_field(x, y, u, v, title='', color=None):
     ax.set_title(title)
     q = ax.quiver(x, y, u, v, color=color)
     return fig, ax, q
+
+def draw_color_maps(cmaps):
+    a = int(np.ceil(np.sqrt(len(cmaps))))
+    fig, axes = plt.subplots(a,a)
+    for i, img in enumerate(cmaps):
+        axes[i//a,i%a].set_title("Forward: %i"%i)
+        axes[i // a, i % a].set(xlabel="Right", ylabel="Left")
+        axes[i//a,i%a].imshow(img)
+    return fig, axes

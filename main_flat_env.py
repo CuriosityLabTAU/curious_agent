@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 import threading
 import random
-from draw_plots import draw_plots, plot_together, plot_field
+from draw_plots import draw_plots, plot_together, plot_field, draw_color_maps
 from activate_agent import activate_agent
 from copy import deepcopy
 from random_agent import RandomAgent
@@ -69,20 +69,24 @@ def main():
     random_agent = RandomAgent(0)
     wall1, wall2 = MovingCube(1), MovingCube(2)
     print('began running at %s' %  datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
+    color_map_agent = []
     for i in range(1):
 
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.01, max=0.01)
         curious_agent = CuriousAgent(0)
-        activate_agent(10, 1000, render=False, print_info=False, reset_env=True, agents=[curious_agent])
-
-        curious_agent.reset_network()
         curious_agent.learner = deepcopy(learner)
-        d = activate_agent(150, render=False, print_info=False, reset_env=False, agents=[curious_agent], get_avg_errors=True,
+        d = activate_agent(100, number_of_epoches=10, render=False, print_info=False, reset_env=False,
+                           agents=[curious_agent], get_avg_errors=False,
                            get_values_field=True, number_of_error_agents=1)
+        d1 = activate_agent(100, number_of_epoches=1, render=False, print_info=False, reset_env=False,
+                           agents=[curious_agent], get_avg_errors=True,
+                           get_values_field=True, number_of_error_agents=1)
+        d['total_errors'] = d1['total_errors']
         agent_dict.append(get_agent_dict(d))
+        color_map_agent.append(stats.get_color_map(curious_agent))
 
         random_agent.learner = learner
-        d = activate_agent(150, render=False, print_info=False, reset_env=False, agents=[random_agent], get_avg_errors=True,
+        d = activate_agent(1000, render=False, print_info=False, reset_env=False, agents=[random_agent], get_avg_errors=True,
                            number_of_error_agents=1)
 
         random_dict.append(get_agent_dict(d))
@@ -93,6 +97,12 @@ def main():
     for i in agent_dict:
         means_curious.append(i['total_errors'])
     std_agent = np.array(means_curious).std(axis=0)
+
+    color_map_agent = np.array(color_map_agent).mean(axis=0)
+
+    figs, axes = draw_color_maps(color_map_agent)
+
+
 
     means_random = []
     for i in random_dict:
@@ -109,17 +119,24 @@ def main():
 
     errors_rate_curious = agent_dict['total_errors']
     errors_rate_random = random_dict['total_errors']
+    last_td_agent = np.zeros((len(agent_dict['epoches_tds']),))
+
+    for i, v in enumerate(agent_dict['epoches_tds']):
+        last_td_agent[i] = v[-1]
+
+    fig, ax = plot_together(np.arange(len(last_td_agent)),[last_td_agent, {'label':'curious', 'color':'blue'}], title='Epochs Last TD',
+                            axis_labels=['epoch', 'last TD'])
 
 
-    fig1, ax1 = plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
+    fig1, ax1 = plot_together(random_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
                   [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors STD',
                   std=[std_agent, std_random], axis_labels=['steps', 'total error'])
 
-    fig2, ax2 = plot_together(agent_dict['timesteps'], [errors_rate_curious, {'label': 'curious', 'color': 'blue'}],
+    fig2, ax2 = plot_together(random_dict['timesteps'], [errors_rate_curious, {'label': 'curious', 'color': 'blue'}],
                   [errors_rate_random, {'label': 'random', 'color': 'red'}], title='Total Errors Means',
                   means=[means_curious, means_random], axis_labels=['steps', 'total error'])
 
-    fig3, ax3 = plot_together(agent_dict['timesteps'][:-1], [stats.derivative(errors_rate_curious), {'label': 'curious', 'color': 'blue'}],
+    fig3, ax3 = plot_together(random_dict['timesteps'][:-1], [stats.derivative(errors_rate_curious), {'label': 'curious', 'color': 'blue'}],
                   [stats.derivative(errors_rate_random), {'label': 'random', 'color': 'red'}], title='Total Errors Derivative',
                 axis_labels=['steps', 'total error'])
 
@@ -127,8 +144,6 @@ def main():
     fig2.savefig('./plots/means.png')
     plt.show()
 
-    from IPython import embed
-    embed()
 
 
 if __name__ == "__main__":
