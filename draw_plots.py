@@ -5,7 +5,7 @@ import numpy as np
 import time
 import square_env.envs as sqv
 import matplotlib.pyplot as plt
-from matplotlib import style
+#from matplotlib import style
 import threading
 
 def loc_to_scalar(loc):
@@ -46,7 +46,7 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
     epoches_factor = max(255/len(epoches_tds), 1)
 
-    style.use('ggplot')
+    #style.use('ggplot')
 
     lc = np.zeros(3)
     for i in scales:
@@ -93,7 +93,7 @@ def draw_plots(values_dict, plot_tds=True, plot_errors=True, plot_locations_bars
 
 
 
-    style.use("classic")
+    #style.use("classic")
 
     if plot_values:
 

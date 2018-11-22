@@ -5,9 +5,11 @@ import curious_agent as cru
 from curious_agent import ALL_ACTIONS
 import square_env.envs as sqv
 from copy import deepcopy
+from time import time
 
 ALL_DIRECTIONS = np.array([[0, 1],[1, 0],[-1, 0], [0, -1]])
 
+TRAINS, LABELS =  None, None
 
 # def train_and_average_errors(agent, epoch_time=1000, render=False, print_info=False):
 #     env = gym.make('square-v0')
@@ -26,6 +28,10 @@ ALL_DIRECTIONS = np.array([[0, 1],[1, 0],[-1, 0], [0, -1]])
 #                                                    np.array([state])) / float(sqv.RECT_WIDTH*sqv.RECT_HEIGHT*12)
 #     return cost_avg
 
+def func2(agent, env):
+    if TRAINS is None:
+        __init__()
+    return agent.learner.cost(TRAINS, LABELS)
 
 def average_errors_on_trained_agent(agent, env):
     env = deepcopy(env)
@@ -41,6 +47,37 @@ def average_errors_on_trained_agent(agent, env):
                     cost_avg += agent.learner.cost(np.array([np.concatenate((old_state, action))]),
                                                    np.array([state])) / float(sqv.RECT_WIDTH*sqv.RECT_HEIGHT*12)
     return cost_avg
+
+
+def load_train_and_labels(agent, env):
+    global TRAINS, LABELS
+    env = deepcopy(env)
+    cost_avg = 0.0
+    trains = []
+    labels = []
+    for x in range(sqv.RECT_WIDTH):
+        for y in range(sqv.RECT_HEIGHT):
+            for direction in ALL_DIRECTIONS:
+                for action in ALL_ACTIONS:
+                    old_state = env._get_all_observations()[agent.index]
+                    env.agents[agent.index]['loc'] = np.array([x, y])
+                    env.agents[agent.index]['dir'] = np.copy(direction)
+                    state, _, _, _ = env.step(action=np.array([np.amax(action)]), index=agent.index)
+                    trains.append(np.array([np.concatenate((old_state, action))]).flatten())
+                    labels.append(np.array([state]).flatten())
+    TRAINS = np.array(trains, dtype=float)
+    LABELS = np.array(labels, dtype=float)
+    return cost_avg
+
+
+def __init__():
+    agent_count = sqv.AGENTS_COUNT
+    sqv.set_global("AGENTS_COUNT", 1)
+    import curious_agent
+    env = gym.make('square-v0')
+    env.reset(render=False)
+    load_train_and_labels(curious_agent.CuriousAgent(0), env)
+    sqv.set_global("AGENTS_COUNT", agent_count)
 
 def get_agent_value_field(agent, env):
     env = deepcopy(env)

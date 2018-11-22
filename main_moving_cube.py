@@ -6,7 +6,6 @@ import numpy as np
 import time
 import square_env.envs as sqv
 import matplotlib.pyplot as plt
-from matplotlib import style
 import threading
 import random
 from draw_plots import draw_plots, plot_together, plot_field, draw_color_maps
@@ -17,14 +16,15 @@ from neural_network import NeuralNetwork
 import datetime
 import stats
 from moving_cube import MovingCube
+import pickle as pkl
 
-NUM_OF_EPOCHES = 100
+NUM_OF_EPOCHES = 2
 
 PRINT_STATE_PRED = 50
 
 PRINT_TIME_STEP = 500
 
-MAX_STEPS = 10000
+MAX_STEPS = 10
 
 NUMBER_OF_AGENTS = 2
 
@@ -63,6 +63,7 @@ def join_dict_list(lst):
 
 
 def main():
+    stats.__init__()
     agent_dict = []
     random_dict = []
 
@@ -87,7 +88,7 @@ def main():
         agent_dict.append(get_agent_dict(d))
         color_map_agent.append(stats.get_color_map(curious_agent))
         random_agent.learner = learner
-        d = activate_agent(MAX_STEPS, render=False, print_info=False, reset_env=False, agents=[random_agent, wall1], get_avg_errors=True,
+        d = activate_agent(MAX_STEPS, number_of_epoches=1, render=False, print_info=False, reset_env=False, agents=[random_agent, wall1], get_avg_errors=True,
                            number_of_error_agents=1, moving_wall_start_index=1, moving_walls_amount=1)
 
         random_dict.append(get_agent_dict(d))
@@ -128,7 +129,6 @@ def main():
     fig, ax = plot_together(np.arange(len(last_td_agent)),[last_td_agent, {'label':'curious', 'color':'blue'}], title='Epochs Last TD',
                             axis_labels=['epoch', 'last TD'])
 
-
     fig1, ax1 = plot_together(random_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
                   [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors STD',
                   std=[std_agent, std_random], axis_labels=['steps', 'total error'])
@@ -141,9 +141,13 @@ def main():
                   [stats.derivative(errors_rate_random), {'label': 'random', 'color': 'red'}], title='Total Errors Derivative',
                 axis_labels=['steps', 'total error'])
 
+    print errors_rate_curious
+    #pkl.dump([last_td_agent, errors_rate_curious, errors_rate_random, color_map_agent, curious_agent], "moving_cube_data.pkl")
+
     fig1.savefig('./plots/std.png')
     fig2.savefig('./plots/means.png')
     plt.show()
+
 
 
 

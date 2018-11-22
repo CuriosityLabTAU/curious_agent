@@ -102,7 +102,7 @@ def activate_agent(epoch_time, number_of_epoches=1, number_of_agents=1, reset_ag
                 for c in range(set_cube):
                     sqv.INIT_LOCATIONS[c + number_of_agents + moving_walls_amount] = env.square_space.sample()
             if get_avg_errors and i < number_of_error_agents:
-                total_errors[i].append(stats.average_errors_on_trained_agent(agent, env))
+                total_errors[i].append(stats.func2(agent, env))
         # learner_c = agent.train(300)
         # costs.append(np.sqrt(learner_c))
         if render:
