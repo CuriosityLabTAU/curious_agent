@@ -24,7 +24,7 @@ PRINT_STATE_PRED = 50
 
 PRINT_TIME_STEP = 500
 
-EPOCH_TIME = 100
+MAX_STEPS = 10000
 
 NUMBER_OF_AGENTS = 1
 
@@ -75,18 +75,18 @@ def main():
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.01, max=0.01)
         curious_agent = CuriousAgent(0)
         curious_agent.learner = deepcopy(learner)
-        d = activate_agent(100, number_of_epoches=10, render=False, print_info=False, reset_env=False,
+        d = activate_agent(MAX_STEPS, number_of_epoches=NUM_OF_EPOCHES, render=False, print_info=False, reset_env=False,
                            agents=[curious_agent], get_avg_errors=False,
                            get_values_field=True, number_of_error_agents=1)
-        d1 = activate_agent(100, number_of_epoches=1, render=False, print_info=False, reset_env=False,
+        curious_agent.learner = deepcopy(learner)
+        d1 = activate_agent(MAX_STEPS, number_of_epoches=1, render=False, print_info=False, reset_env=False,
                            agents=[curious_agent], get_avg_errors=True,
                            get_values_field=True, number_of_error_agents=1)
         d['total_errors'] = d1['total_errors']
         agent_dict.append(get_agent_dict(d))
         color_map_agent.append(stats.get_color_map(curious_agent))
-
         random_agent.learner = learner
-        d = activate_agent(1000, render=False, print_info=False, reset_env=False, agents=[random_agent], get_avg_errors=True,
+        d = activate_agent(MAX_STEPS, render=False, print_info=False, reset_env=False, agents=[random_agent], get_avg_errors=True,
                            number_of_error_agents=1)
 
         random_dict.append(get_agent_dict(d))
