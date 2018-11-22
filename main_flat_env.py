@@ -70,6 +70,7 @@ def main():
     wall1, wall2 = MovingCube(1), MovingCube(2)
     print('began running at %s' %  datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
     color_map_agent = []
+    sqv.set_global("AGENTS_COUNT", NUMBER_OF_AGENTS)
     for i in range(1):
 
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.01, max=0.01)
