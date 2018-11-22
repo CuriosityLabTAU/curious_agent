@@ -20,7 +20,7 @@ INIT_LOCATIONS = [[5, 5], [3, 9], [15, 12], [9, 14], [5, 11]]
 INIT_DIRECTIONS = [[1, 0], [0, -1], [0, 0], [0, 0], [0, 0]]
 
 
-AGENTS_COUNT = 1
+AGENTS_COUNT = 5
 
 
 def set_global(name, val):
