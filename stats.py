@@ -31,7 +31,7 @@ TRAINS, LABELS =  None, None
 def func2(agent, env):
     if TRAINS is None:
         __init__()
-    return agent.learner.cost(TRAINS, LABELS)
+    return agent.learner.cost(TRAINS, LABELS) / len(TRAINS)
 
 def average_errors_on_trained_agent(agent, env):
     env = deepcopy(env)

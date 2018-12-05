@@ -27,6 +27,7 @@ class NeuralNetwork:
         inputs = []
         deltas = []
 
+        # out(t+1) = f(out(t) * A(t) + B(t))
         for i in range(len(self.layers)):
             inputs.append(input)
             input = self.nonlin_funcs[i](input.dot(self.layers[i])+self.biases[i])

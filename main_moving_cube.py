@@ -141,7 +141,6 @@ def main():
                   [stats.derivative(errors_rate_random), {'label': 'random', 'color': 'red'}], title='Total Errors Derivative',
                 axis_labels=['steps', 'total error'])
 
-    print errors_rate_curious
     #pkl.dump([last_td_agent, errors_rate_curious, errors_rate_random, color_map_agent, curious_agent], "moving_cube_data.pkl")
 
     fig1.savefig('./plots/std.png')

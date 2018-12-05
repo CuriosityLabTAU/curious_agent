@@ -18,15 +18,15 @@ import datetime
 import stats
 from moving_cube import MovingCube
 
-NUM_OF_EPOCHES = 100
+NUM_OF_EPOCHES = 1
 
 PRINT_STATE_PRED = 50
 
 PRINT_TIME_STEP = 500
 
-MAX_STEPS = 10000
+MAX_STEPS = 100000
 
-NUMBER_OF_AGENTS = 1
+NUMBER_OF_AGENTS = 5
 
 
 def add_avg_dict(src, d, i):
