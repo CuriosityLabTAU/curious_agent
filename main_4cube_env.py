@@ -25,7 +25,7 @@ PRINT_STATE_PRED = 50
 
 PRINT_TIME_STEP = 500
 
-MAX_STEPS = 100000
+MAX_STEPS = 5000
 
 NUMBER_OF_AGENTS = 5
 
@@ -72,12 +72,12 @@ def main():
     print('began running at %s' % datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
     color_map_agent = []
     sqv.set_global("AGENTS_COUNT", NUMBER_OF_AGENTS)
-    for i in range(1):
+    for i in range(10):
 
         learner = NeuralNetwork(cru.AGENT_LEARNER_NETWORK_SHAPE, cru.linear_relu, min=-0.01, max=0.01)
         curious_agent = CuriousAgent(0)
         curious_agent.learner = deepcopy(learner)
-        d = activate_agent(MAX_STEPS, number_of_epoches=NUM_OF_EPOCHES, render=False, print_info=False, reset_env=False,
+        d = activate_agent(1000, number_of_epoches=NUM_OF_EPOCHES, render=False, print_info=False, reset_env=False,
                            agents=[curious_agent], get_avg_errors=False,
                            get_values_field=True, number_of_error_agents=1)
         curious_agent.learner = deepcopy(learner)
@@ -126,7 +126,7 @@ def main():
     for i, v in enumerate(agent_dict['epoches_tds']):
         last_td_agent[i] = v[-1]
 
-    fig, ax = plot_together(np.arange(len(last_td_agent)),[last_td_agent, {'label':'curious', 'color':'blue'}], title='Epochs Last TD',
+    fig0, ax0 = plot_together(np.arange(len(last_td_agent)),[last_td_agent, {'label':'curious', 'color':'blue'}], title='Epochs Last TD',
                             axis_labels=['epoch', 'last TD'])
 
     fig1, ax1 = plot_together(random_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
@@ -141,9 +141,13 @@ def main():
                   [stats.derivative(errors_rate_random), {'label': 'random', 'color': 'red'}], title='Total Errors Derivative',
                 axis_labels=['steps', 'total error'])
 
-    fig1.savefig('./plots/std.png', dpi = 300)
-    fig2.savefig('./plots/means.png', dpi = 300)
-    pkl.dump([last_td_agent, errors_rate_curious, errors_rate_random, color_map_agent, curious_agent], open('4cubes_data.pkl', 'wb'))
+    figs.savefig('./plots/colormap.png')
+    fig0.savefig('./plots/tds.png')
+    fig1.savefig('./plots/std.png', dpi=300)
+    fig2.savefig('./plots/means.png', dpi=300)
+    fig3.savefig('./plots/deriv.png')
+    with open('4cubes_data.pkl', 'wb') as f:
+        pkl.dump([last_td_agent, errors_rate_curious, errors_rate_random, color_map_agent, curious_agent], f)
     plt.show()
 
 

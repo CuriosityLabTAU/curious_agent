@@ -24,7 +24,7 @@ ALL_ACTIONS = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 AGENT_GAMMA = 0.9
 # the init gamma variable of the agent
 
-AGENT_LEARNER_ALPHA = 1e-6
+AGENT_LEARNER_ALPHA = 1e-4
 # the learning rate of the agent's learner
 
 AGENT_LEARNER_NETWORK_SHAPE = (sqv.OBSERVATION_SIZE + 3, 16, sqv.OBSERVATION_SIZE)
@@ -36,7 +36,7 @@ AGENT_LEARNER_NETWORK_SHAPE_RECURRENT = RecurrentNeuralNetwork.create_layers(sqv
 AGENT_INIT_COUNTER = 5
 # amount of steps to take before performing gradient decent on recurrent network
 
-AGENT_Q_ALPHA = 1e-3
+AGENT_Q_ALPHA = 1e-2
 # the learning rate of the agent's q function
 
 AGENT_INIT_EPSILON = 0.1
@@ -82,7 +82,7 @@ def sigmoid(x, derivative=False):
 
 class CuriousAgent:
     def __init__(self, index):
-        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, linear_relu, min=-0.5, max=0.5)
+        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, linear_relu, min=-1, max=1)
         # input -> state
         # output -> value(state)
 
