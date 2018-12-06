@@ -24,7 +24,7 @@ PRINT_STATE_PRED = 50
 
 PRINT_TIME_STEP = 500
 
-MAX_STEPS = 10000
+MAX_STEPS = 100000
 
 NUMBER_OF_AGENTS = 5
 
@@ -68,7 +68,7 @@ def main():
 
     random_agent = RandomAgent(0)
     wall1, wall2 = MovingCube(1), MovingCube(2)
-    print('began running at %s' %  datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
+    print('began running at %s' % datetime.datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
     color_map_agent = []
     sqv.set_global("AGENTS_COUNT", NUMBER_OF_AGENTS)
     for i in range(1):
@@ -128,14 +128,13 @@ def main():
     fig, ax = plot_together(np.arange(len(last_td_agent)),[last_td_agent, {'label':'curious', 'color':'blue'}], title='Epochs Last TD',
                             axis_labels=['epoch', 'last TD'])
 
-
     fig1, ax1 = plot_together(random_dict['timesteps'], [errors_rate_curious, {'label':'curious', 'color':'blue'}],
                   [errors_rate_random, {'label':'random', 'color':'red'}], title='Total Errors STD',
                   std=[std_agent, std_random], axis_labels=['steps', 'total error'])
 
     fig2, ax2 = plot_together(random_dict['timesteps'], [errors_rate_curious, {'label': 'curious', 'color': 'blue'}],
-                  [errors_rate_random, {'label': 'random', 'color': 'red'}], title='Total Errors Means',
-                  means=[means_curious, means_random], axis_labels=['steps', 'total error'])
+                              [errors_rate_random, {'label': 'random', 'color': 'red'}], title='Total Errors Means',
+                              means=[means_curious, means_random], axis_labels=['steps', 'total error'])
 
     fig3, ax3 = plot_together(random_dict['timesteps'][:-1], [stats.derivative(errors_rate_curious), {'label': 'curious', 'color': 'blue'}],
                   [stats.derivative(errors_rate_random), {'label': 'random', 'color': 'red'}], title='Total Errors Derivative',

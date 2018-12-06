@@ -82,7 +82,7 @@ def sigmoid(x, derivative=False):
 
 class CuriousAgent:
     def __init__(self, index):
-        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, relu, min=-0.5, max=0.5)
+        self.q_function = NeuralNetwork(AGENT_Q_NETWORK, linear_relu, min=-0.5, max=0.5)
         # input -> state
         # output -> value(state)
 
