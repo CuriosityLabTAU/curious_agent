@@ -18,13 +18,13 @@ import stats
 from moving_cube import MovingCube
 import pickle as pkl
 
-NUM_OF_EPOCHES = 2
+NUM_OF_EPOCHES = 1000
 
 PRINT_STATE_PRED = 50
 
 PRINT_TIME_STEP = 500
 
-MAX_STEPS = 10
+MAX_STEPS = 5000
 
 NUMBER_OF_AGENTS = 2
 

@@ -17,6 +17,7 @@ from neural_network import NeuralNetwork
 import datetime
 import stats
 from moving_cube import MovingCube
+import pickle as pkl
 
 NUM_OF_EPOCHES = 100
 
@@ -140,8 +141,9 @@ def main():
                   [stats.derivative(errors_rate_random), {'label': 'random', 'color': 'red'}], title='Total Errors Derivative',
                 axis_labels=['steps', 'total error'])
 
-    fig1.savefig('./plots/std.png')
-    fig2.savefig('./plots/means.png')
+    fig1.savefig('./plots/std.png', dpi = 300)
+    fig2.savefig('./plots/means.png', dpi = 300)
+    pkl.dump([last_td_agent, errors_rate_curious, errors_rate_random, color_map_agent, curious_agent], open('4cubes_data.pkl', 'wb'))
     plt.show()
 
 

@@ -47,13 +47,13 @@ AGENT_Q_NETWORK = (sqv.OBSERVATION_SIZE, 8, 3)
 REWARD_FACTOR = 10.0
 
 
-def linear_relu(x, d=False):
+def _linear_relu(x, d=False):
     if d:
         return 1.0 if x > 0.0 else 0.1
     return 0.0 if x <= 0.0 else x
 
 
-linear_relu = np.vectorize(linear_relu)
+linear_relu = np.vectorize(_linear_relu)
 
 
 def relu(x, derivative=False):
@@ -65,13 +65,13 @@ def relu(x, derivative=False):
     return np.log(np.exp(x)+1)
 
 
-def linear(x, derivative=False):
+def _linear(x, derivative=False):
     if derivative:
         return 1
     return x
 
 
-linear = np.vectorize(linear)
+linear = np.vectorize(_linear)
 
 
 def sigmoid(x, derivative=False):
