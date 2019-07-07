@@ -153,4 +153,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    f = open('4cubes_data.pkl', 'rb')
+    ca = pkl.load(f)
+    print()
